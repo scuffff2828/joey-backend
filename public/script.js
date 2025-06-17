@@ -323,7 +323,7 @@ class IRProForm {
             const data = Object.fromEntries(formData.entries());
             
             // Submit to backend API
-            const response = await fetch('/submit', {
+            const response = await fetch('https://joey-backend.onrender.com/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -362,17 +362,26 @@ class IRProForm {
             const successContent = successMessage.querySelector('.success-content');
             const fileLinks = document.createElement('div');
             fileLinks.className = 'file-links';
+            
+            // Ensure HTTPS URLs for production
+            const jsonUrl = this.submissionResult.files.json.url.replace('http://', 'https://');
+            const pdfUrl = this.submissionResult.files.pdf.url.replace('http://', 'https://');
+            
             fileLinks.innerHTML = `
                 <h3>Generated Files:</h3>
                 <div class="file-link">
-                    <a href="${this.submissionResult.files.json.url}" target="_blank" class="btn-secondary">
+                    <a href="${jsonUrl}" target="_blank" class="btn-secondary">
                         <i class="fas fa-file-code"></i> View JSON Data
                     </a>
                 </div>
                 <div class="file-link">
-                    <a href="${this.submissionResult.files.pdf.url}" target="_blank" class="btn-secondary">
+                    <a href="${pdfUrl}" target="_blank" class="btn-secondary">
                         <i class="fas fa-file-pdf"></i> Download PDF Report
                     </a>
+                </div>
+                <div class="submission-info">
+                    <p><strong>Submission ID:</strong> ${this.submissionResult.id}</p>
+                    <p><strong>Generated:</strong> ${new Date(this.submissionResult.timestamp).toLocaleString()}</p>
                 </div>
             `;
             successContent.appendChild(fileLinks);

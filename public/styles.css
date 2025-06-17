@@ -80,6 +80,25 @@
     color: var(--color-text);
 }
 
+/* Submission Info Styles */
+.submission-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e9ecef;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--color-success);
+}
+
+.submission-info p {
+    margin: 5px 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+.submission-info strong {
+    color: var(--color-primary);
+}
+
 :root {
     --color-primary: #000000;
     --color-secondary: #ffffff;
