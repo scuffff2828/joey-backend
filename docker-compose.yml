@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  irpro:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/share/nginx/html
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.irpro.rule=Host(`irpro.yourdomain.com`)"
+      - "traefik.http.routers.irpro.tls=true"
+      - "traefik.http.routers.irpro.tls.certresolver=letsencrypt"
+      - "traefik.http.services.irpro.loadbalancer.server.port=80"

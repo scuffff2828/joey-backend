@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="IRPro - Professional Immunization Assessment">
+    <title>IRPro - IR Intake Form</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <header class="nav-header">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-shield-virus"></i>
+                    <span>IRPro</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="stage-header">
+                <h1>IR Intake</h1>
+                <p>Complete all questions for compliance</p>
+            </div>
+
+            <form id="irpro-form" class="intake-form">
+                <div class="form-grid">
+                    <!-- 1. Assessment Type -->
+                    <div class="form-group full-width">
+                        <label for="assessmentType">1. Assessment Type *</label>
+                        <select id="assessmentType" name="assessment_type" required>
+                            <option value="">Select Assessment Type</option>
+                            <option value="California K-12 School">California K-12 School</option>
+                            <option value="US Immigration I-693">US Immigration I-693</option>
+                        </select>
+                    </div>
+
+                    <!-- 2 & 3. Patient Name -->
+                    <div class="form-group">
+                        <label for="firstName">2. First Name *</label>
+                        <input type="text" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">3. Last Name *</label>
+                        <input type="text" id="lastName" name="last_name" required>
+                    </div>
+
+                    <!-- 4. Date of Birth -->
+                    <div class="form-group">
+                        <label for="dateOfBirth">4. Date of Birth *</label>
+                        <input type="date" id="dateOfBirth" name="date_of_birth" required>
+                    </div>
+
+                    <!-- 5. Gender -->
+                    <div class="form-group">
+                        <label for="gender">5. Gender *</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- 6. Grade Entering -->
+                    <div class="form-group">
+                        <label for="gradeEntering">6. Grade Entering</label>
+                        <input type="text" id="gradeEntering" name="grade_entering" placeholder="e.g., K, 1st, 7th, 12th">
+                    </div>
+
+                    <!-- 7. Birth location - Name of school -->
+                    <div class="form-group full-width">
+                        <label for="schoolName">7. Birth location - Name of school</label>
+                        <input type="text" id="schoolName" name="school_name" placeholder="e.g., Lincoln Elementary School">
+                    </div>
+
+                    <!-- 8. Country of Birth -->
+                    <div class="form-group">
+                        <label for="countryOfBirth">8. Country of Birth *</label>
+                        <select id="countryOfBirth" name="country_of_birth" required>
+                            <option value="">Select Country</option>
+                            <option value="United States">United States</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- 9. Start-Up or Catch-Up: If Catch-Up, date to start next vaccination -->
+                    <div class="form-group full-width">
+                        <label for="startupCatchup">9. Start-Up or Catch-Up: If Catch-Up, date to start next vaccination *</label>
+                        <select id="startupCatchup" name="startup_catchup" required>
+                            <option value="">Select Type</option>
+                            <option value="Start-Up">Start-Up</option>
+                            <option value="Catch-Up">Catch-Up</option>
+                        </select>
+                    </div>
+
+                    <!-- Catch-Up Date Field -->
+                    <div class="form-group" id="catchupDateField" style="display: none;">
+                        <label for="catchupDate">Date to start next vaccination</label>
+                        <input type="date" id="catchupDate" name="catchup_date">
+                    </div>
+
+                    <!-- 10. Previous Immunization Records Required -->
+                    <div class="form-group">
+                        <label for="previousRecords">10. Previous Immunization Records Required *</label>
+                        <select id="previousRecords" name="previous_records" required>
+                            <option value="">Select Status</option>
+                            <option value="Complete">Complete</option>
+                            <option value="Partial">Partial</option>
+                            <option value="None">None</option>
+                        </select>
+                    </div>
+
+                    <!-- 11. CAIR/MRN -->
+                    <div class="form-group full-width">
+                        <label for="cairMrn">11. CAIR/MRN</label>
+                        <input type="text" id="cairMrn" name="cair_mrn" placeholder="e.g., CA123456789 or leave blank">
+                        <small><strong>CAIR preferred</strong> (California Immunization Registry). MRN is found on your insurance card. Leave blank if you don't have either - one will be assigned.</small>
+                    </div>
+
+                    <!-- 12. Medical Conditions/Allergies -->
+                    <div class="form-group full-width">
+                        <label for="allergiesReactions">12. Allergies or Reactions to Vaccines? *</label>
+                        <select id="allergiesReactions" name="allergies_reactions" required>
+                            <option value="">Select option</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+
+                    <!-- If yes, list details -->
+                    <div class="form-group full-width" id="allergyDetailsGroup" style="display: none;">
+                        <label for="allergyDetails">If yes, list details.</label>
+                        <textarea id="allergyDetails" name="allergy_details" rows="3" placeholder="Please describe specific allergies or reactions to vaccines..."></textarea>
+                    </div>
+
+                    <!-- 13. Hospital Birth -->
+                    <div class="form-group full-width">
+                        <label>13. Hospital Birth? *</label>
+                        <div style="display: flex; gap: 20px;">
+                            <label><input type="radio" name="hospital_birth" value="Yes" required> Yes</label>
+                            <label><input type="radio" name="hospital_birth" value="No" required> No</label>
+                        </div>
+                    </div>
+
+                    <!-- Hospital Birth Details -->
+                    <div class="form-group full-width" id="hospitalDetailsGroup" style="display: none;">
+                        <label for="hospitalDetails">If yes to hospital birth, name, city and state of hospital</label>
+                        <input type="text" id="hospitalDetails" name="hospital_details" placeholder="e.g., Mercy Hospital, Los Angeles, CA">
+                    </div>
+
+                    <!-- Physician to use for record -->
+                    <div class="form-group full-width">
+                        <label for="physicianRecord">Physician to use for record – Name and address</label>
+                        <textarea id="physicianRecord" name="physician_record" rows="3" placeholder="e.g., Dr. Smith, 123 Main St, City, State 12345"></textarea>
+                    </div>
+
+                    <!-- 14. Email Address -->
+                    <div class="form-group full-width">
+                        <label for="email">14. Email Address *</label>
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                    </div>
+
+                    <!-- Developer Mode Hidden Field -->
+                    <input type="hidden" id="developerMode" name="developer_mode" value="false">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Assessment
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                <div class="success-content">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>Assessment Completed!</h2>
+                    <p>Your IR Intake assessment has been completed.</p>
+                    <a href="javascript:location.reload()" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-arrow-left"></i>
+                        New Assessment
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 IRPro. Professional Immunization Assessment by JoeyDirt333.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
