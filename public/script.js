@@ -323,7 +323,7 @@ class IRProForm {
             const data = Object.fromEntries(formData.entries());
             
             // Submit to backend API
-            const response = await fetch('https://joey-backend.onrender.com/submit', {
+            const response = await fetch('https://joey-backend-2.onrender.com/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

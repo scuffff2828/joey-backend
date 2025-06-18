@@ -32,17 +32,25 @@ const generateReferenceCode = () => {
 
 const sendNotificationEmail = async (referenceCode, submissionData) => {
   try {
+    // Skip email if no credentials configured
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log('Email credentials not configured, skipping email notification');
+      console.log(`Submission received - Reference Code: ${referenceCode}`);
+      console.log(`Patient: ${submissionData.first_name} ${submissionData.last_name} (${submissionData.email})`);
+      return;
+    }
+
     // Create transporter using Gmail SMTP
     const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER || 'noreply@example.com',
-        pass: process.env.EMAIL_PASS || 'default'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'noreply@example.com',
+      from: process.env.EMAIL_USER,
       to: 'seyyidsahin2828@gmail.com',
       subject: referenceCode,
       html: `
