@@ -357,37 +357,72 @@ class IRProForm {
         const successMessage = document.getElementById('successMessage');
         successMessage.style.display = 'block';
         
-        // Update success message with file links if available
-        if (this.submissionResult && this.submissionResult.files) {
+        // Update success message with reference code
+        if (this.submissionResult && this.submissionResult.referenceCode) {
             const successContent = successMessage.querySelector('.success-content');
-            const fileLinks = document.createElement('div');
-            fileLinks.className = 'file-links';
+            const referenceInfo = document.createElement('div');
+            referenceInfo.className = 'reference-info';
             
-            // Ensure HTTPS URLs for production
-            const jsonUrl = this.submissionResult.files.json.url.replace('http://', 'https://');
-            const pdfUrl = this.submissionResult.files.pdf.url.replace('http://', 'https://');
-            
-            fileLinks.innerHTML = `
-                <h3>Generated Files:</h3>
-                <div class="file-link">
-                    <a href="${jsonUrl}" target="_blank" class="btn-secondary">
-                        <i class="fas fa-file-code"></i> View JSON Data
-                    </a>
-                </div>
-                <div class="file-link">
-                    <a href="${pdfUrl}" target="_blank" class="btn-secondary">
-                        <i class="fas fa-file-pdf"></i> Download PDF Report
-                    </a>
+            referenceInfo.innerHTML = `
+                <div class="reference-code-display">
+                    <h3>🎫 Your Reference Code</h3>
+                    <div class="reference-code">${this.submissionResult.referenceCode}</div>
+                    <div class="reference-instructions">
+                        <p><strong>⚠️ IMPORTANT: Please save this code!</strong></p>
+                        <p>You will need this reference code for all future inquiries about your submission.</p>
+                        <p>Screenshot or write down: <strong>${this.submissionResult.referenceCode}</strong></p>
+                    </div>
                 </div>
                 <div class="submission-info">
-                    <p><strong>Submission ID:</strong> ${this.submissionResult.id}</p>
-                    <p><strong>Generated:</strong> ${new Date(this.submissionResult.timestamp).toLocaleString()}</p>
+                    <p><strong>Submitted:</strong> ${new Date(this.submissionResult.timestamp).toLocaleString()}</p>
+                    <p><strong>Status:</strong> Processing Complete</p>
+                </div>
+                <div class="copy-code-section">
+                    <button id="copyCodeBtn" class="btn-copy">
+                        <i class="fas fa-copy"></i> Copy Reference Code
+                    </button>
                 </div>
             `;
-            successContent.appendChild(fileLinks);
+            successContent.appendChild(referenceInfo);
+            
+            // Add copy button event listener
+            const copyBtn = document.getElementById('copyCodeBtn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    this.copyReferenceCode(this.submissionResult.referenceCode);
+                });
+            }
         }
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    copyReferenceCode(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            // Show copy notification
+            const notification = document.createElement('div');
+            notification.className = 'copy-notification';
+            notification.innerHTML = '<i class="fas fa-check"></i> Reference code copied to clipboard!';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }).catch(() => {
+            alert('Failed to copy code. Please manually copy: ' + code);
+        });
     }
     
     showErrorMessage(message) {

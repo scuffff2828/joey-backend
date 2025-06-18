@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
 const { v4: uuidv4 } = require('uuid');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,49 @@ const ensureFilesDirectory = () => {
   const filesDir = path.join(__dirname, 'files');
   if (!fs.existsSync(filesDir)) {
     fs.mkdirSync(filesDir, { recursive: true });
+  }
+};
+
+const generateReferenceCode = () => {
+  const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+const sendNotificationEmail = async (referenceCode, submissionData) => {
+  try {
+    // Create transporter using Gmail SMTP
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'noreply@example.com',
+        pass: process.env.EMAIL_PASS || 'default'
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'noreply@example.com',
+      to: 'seyyidsahin2828@gmail.com',
+      subject: referenceCode,
+      html: `
+        <h2>New IRPro Submission</h2>
+        <p><strong>Reference Code:</strong> ${referenceCode}</p>
+        <p><strong>Submission Time:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Patient Name:</strong> ${submissionData.first_name} ${submissionData.last_name}</p>
+        <p><strong>Email:</strong> ${submissionData.email}</p>
+        <p><strong>Assessment Type:</strong> ${submissionData.assessment_type}</p>
+        <hr>
+        <p><em>This is an automated notification from IRPro system.</em></p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Notification email sent successfully');
+  } catch (error) {
+    console.error('Failed to send notification email:', error);
   }
 };
 
@@ -161,30 +205,28 @@ app.post('/submit', async (req, res) => {
     
     ensureFilesDirectory();
     
+    // Generate reference code and unique identifiers
+    const referenceCode = generateReferenceCode();
     const fileId = uuidv4();
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `data_${timestamp}_${fileId}`;
+    const filename = `${referenceCode}_${timestamp}_${fileId}`;
     
+    // Save JSON file
     const jsonPath = path.join(__dirname, 'files', `${filename}.json`);
-    fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2));
+    const dataWithReference = { ...data, referenceCode, submissionId: fileId };
+    fs.writeFileSync(jsonPath, JSON.stringify(dataWithReference, null, 2));
     
-    await generatePDF(data, filename);
+    // Generate PDF
+    await generatePDF(dataWithReference, filename);
     
-    const baseUrl = req.protocol + '://' + req.get('host');
+    // Send notification email to admin
+    await sendNotificationEmail(referenceCode, data);
+    
+    // Return only reference code to customer
     const response = {
-      id: fileId,
+      referenceCode: referenceCode,
       timestamp: new Date().toISOString(),
-      files: {
-        json: {
-          filename: `${filename}.json`,
-          url: `${baseUrl}/files/${filename}.json`
-        },
-        pdf: {
-          filename: `${filename}.pdf`,
-          url: `${baseUrl}/files/${filename}.pdf`
-        }
-      },
-      message: 'Data processed successfully'
+      message: 'Submission completed successfully. Please save your reference code for future inquiries.'
     };
     
     res.json(response);
