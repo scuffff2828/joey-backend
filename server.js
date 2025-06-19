@@ -30,7 +30,7 @@ const generateReferenceCode = () => {
   return result;
 };
 
-const sendNotificationEmail = async (referenceCode, submissionData) => {
+const sendNotificationEmail = async (referenceCode, submissionData, jsonPath, pdfPath) => {
   try {
     // Skip email if no credentials configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -49,26 +49,62 @@ const sendNotificationEmail = async (referenceCode, submissionData) => {
       }
     });
 
+    // Prepare attachments
+    const attachments = [];
+    
+    // Add JSON file as attachment
+    if (fs.existsSync(jsonPath)) {
+      attachments.push({
+        filename: `${referenceCode}_submission.json`,
+        path: jsonPath,
+        contentType: 'application/json'
+      });
+    }
+    
+    // Add PDF file as attachment  
+    if (fs.existsSync(pdfPath)) {
+      attachments.push({
+        filename: `${referenceCode}_report.pdf`,
+        path: pdfPath,
+        contentType: 'application/pdf'
+      });
+    }
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: 'seyyidsahin2828@gmail.com',
       subject: referenceCode,
       html: `
-        <h2>New IRPro Submission</h2>
-        <p><strong>Reference Code:</strong> ${referenceCode}</p>
-        <p><strong>Submission Time:</strong> ${new Date().toLocaleString()}</p>
-        <p><strong>Patient Name:</strong> ${submissionData.first_name} ${submissionData.last_name}</p>
-        <p><strong>Email:</strong> ${submissionData.email}</p>
-        <p><strong>Assessment Type:</strong> ${submissionData.assessment_type}</p>
-        <hr>
-        <p><em>This is an automated notification from IRPro system.</em></p>
-      `
+        <h2>📋 New IRPro Submission</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
+          <p><strong>🎫 Reference Code:</strong> <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace;">${referenceCode}</span></p>
+          <p><strong>⏰ Submission Time:</strong> ${new Date().toLocaleString()}</p>
+          <p><strong>👤 Patient Name:</strong> ${submissionData.first_name} ${submissionData.last_name}</p>
+          <p><strong>📧 Email:</strong> ${submissionData.email}</p>
+          <p><strong>📝 Assessment Type:</strong> ${submissionData.assessment_type}</p>
+          <p><strong>🏥 Grade/School:</strong> ${submissionData.grade_entering || 'Not specified'} / ${submissionData.school_name || 'Not specified'}</p>
+          <p><strong>🌍 Country of Birth:</strong> ${submissionData.country_of_birth}</p>
+          <p><strong>💉 Vaccination Status:</strong> ${submissionData.startup_catchup}</p>
+          <p><strong>🩺 Previous Records:</strong> ${submissionData.previous_records}</p>
+          <p><strong>⚠️ Allergies:</strong> ${submissionData.allergies_reactions}</p>
+        </div>
+        <hr style="margin: 20px 0;">
+        <p><strong>📎 Attached Files:</strong></p>
+        <ul>
+          <li>📄 JSON Data File (${referenceCode}_submission.json)</li>
+          <li>📑 PDF Report (${referenceCode}_report.pdf)</li>
+        </ul>
+        <hr style="margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;"><em>🤖 This is an automated notification from IRPro system.</em></p>
+      `,
+      attachments: attachments
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Notification email sent successfully');
+    console.log(`✅ Email sent successfully to seyyidsahin2828@gmail.com with ${attachments.length} attachments`);
+    console.log(`📎 Attachments: ${attachments.map(a => a.filename).join(', ')}`);
   } catch (error) {
-    console.error('Failed to send notification email:', error);
+    console.error('❌ Failed to send notification email:', error);
   }
 };
 
@@ -225,10 +261,10 @@ app.post('/submit', async (req, res) => {
     fs.writeFileSync(jsonPath, JSON.stringify(dataWithReference, null, 2));
     
     // Generate PDF
-    await generatePDF(dataWithReference, filename);
+    const pdfPath = await generatePDF(dataWithReference, filename);
     
-    // Send notification email to admin
-    await sendNotificationEmail(referenceCode, data);
+    // Send notification email to admin with attachments
+    await sendNotificationEmail(referenceCode, data, jsonPath, pdfPath);
     
     // Return only reference code to customer
     const response = {
