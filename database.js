@@ -22,9 +22,19 @@ db.serialize(() => {
       access_token TEXT UNIQUE NOT NULL,
       expires_at DATETIME NOT NULL,
       email TEXT,
+      payment_method TEXT DEFAULT 'paypal',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  
+  // Add payment_method column if it doesn't exist (for existing databases)
+  db.run(`
+    ALTER TABLE payments ADD COLUMN payment_method TEXT DEFAULT 'paypal'
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Error adding payment_method column:', err.message);
+    }
+  });
 });
 
 module.exports = db;

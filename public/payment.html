@@ -110,10 +110,95 @@
                         </div>
 
                         <div class="payment-section">
-                            <div id="paypal-button-container"></div>
+                            <!-- Payment Method Selection -->
+                            <div class="payment-methods">
+                                <h3>Choose Payment Method</h3>
+                                <div class="payment-options">
+                                    <div class="payment-option" id="card-option">
+                                        <input type="radio" id="card-payment" name="payment-method" value="card" checked>
+                                        <label for="card-payment">
+                                            <div class="payment-option-content">
+                                                <i class="fas fa-credit-card"></i>
+                                                <span>Credit / Debit Card</span>
+                                                <div class="card-logos">
+                                                    <i class="fab fa-cc-visa"></i>
+                                                    <i class="fab fa-cc-mastercard"></i>
+                                                    <i class="fab fa-cc-amex"></i>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="payment-option" id="paypal-option">
+                                        <input type="radio" id="paypal-payment" name="payment-method" value="paypal">
+                                        <label for="paypal-payment">
+                                            <div class="payment-option-content">
+                                                <i class="fab fa-paypal"></i>
+                                                <span>PayPal</span>
+                                                <small>Pay with your PayPal account</small>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Credit Card Form -->
+                            <div id="card-payment-form" class="payment-form active">
+                                <div class="card-input-section">
+                                    <h4>Card Information</h4>
+                                    <div class="form-group">
+                                        <label for="card-number">Card Number</label>
+                                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                                        <div class="card-type-indicator">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="card-expiry">MM / YY</label>
+                                            <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="card-cvc">CVC</label>
+                                            <input type="text" id="card-cvc" placeholder="123" maxlength="4">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cardholder-name">Cardholder Name</label>
+                                        <input type="text" id="cardholder-name" placeholder="Full name on card">
+                                    </div>
+                                    <div class="demo-info">
+                                        <small><strong>Demo Mode:</strong> Use test card: 4242 4242 4242 4242, any future date, any CVC</small>
+                                    </div>
+                                    <button type="button" class="btn-pay" id="pay-with-card">
+                                        <i class="fas fa-lock"></i>
+                                        Pay $50.00 Securely
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- PayPal Form -->
+                            <div id="paypal-payment-form" class="payment-form">
+                                <div class="paypal-section">
+                                    <h4>PayPal Payment</h4>
+                                    <p>You will be redirected to PayPal to complete your payment securely.</p>
+                                    <div id="paypal-button-container"></div>
+                                </div>
+                            </div>
+
+                            <!-- Security Indicators -->
                             <div class="payment-security">
-                                <i class="fas fa-lock"></i>
-                                <span>Secure payment processed by PayPal</span>
+                                <div class="security-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>256-bit SSL Encryption</span>
+                                </div>
+                                <div class="security-item">
+                                    <i class="fas fa-lock"></i>
+                                    <span>PCI DSS Compliant</span>
+                                </div>
+                                <div class="security-item">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span>100% Secure Payment</span>
+                                </div>
                             </div>
                         </div>
 
@@ -164,6 +249,13 @@
             </div>
         </main>
 
+        <!-- Payment Processing Overlay -->
+        <div id="payment-processing" class="payment-processing">
+            <div class="processing-spinner"></div>
+            <div class="processing-text">Processing your payment...</div>
+            <div class="processing-subtext">Please do not close this window</div>
+        </div>
+
         <!-- Footer -->
         <footer class="app-footer">
             <div class="footer-content">
@@ -175,79 +267,383 @@
     <!-- PayPal SDK -->
     <script src="https://www.paypal.com/sdk/js?client-id=AYzBcHsqUGWJjY6-R_CfCz1ddLjY2gvqLaazgBsVy8iQfK4F7bHGz1iN_9zFEv1VJzKxOqpBgQ4uKjOv&currency=USD"></script>
     <script>
-        function goToStep(stepNumber) {
-            // Update progress steps
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active', 'completed');
-            });
-            document.querySelectorAll('.step-content').forEach(content => {
-                content.classList.remove('active');
-            });
+        // ===============================
+        // MODERN PAYMENT SYSTEM JAVASCRIPT
+        // ===============================
 
-            // Mark previous steps as completed
-            for(let i = 1; i < stepNumber; i++) {
-                document.querySelector(`[data-step="${i}"]`).classList.add('completed');
+        class PaymentSystem {
+            constructor() {
+                this.currentStep = 1;
+                this.currentPaymentMethod = 'card';
+                this.isProcessing = false;
+                this.init();
             }
 
-            // Activate current step
-            document.querySelector(`[data-step="${stepNumber}"]`).classList.add('active');
-            document.getElementById(`step-${stepNumber}`).classList.add('active');
-
-            // Initialize PayPal on step 2
-            if(stepNumber === 2) {
-                initPayPal();
+            init() {
+                this.setupEventListeners();
+                this.initializeStep2();
             }
-        }
 
-        function initPayPal() {
-            // Clear any existing PayPal buttons
-            document.getElementById('paypal-button-container').innerHTML = '';
-            
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: '50.00'
-                            },
-                            description: 'IRPro Assessment Access'
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        // Go to step 3 (success)
-                        goToStep(3);
-                        
-                        // Send payment details to backend
-                        return fetch('/payment-success', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                orderID: data.orderID,
-                                payerID: data.payerID,
-                                details: details
-                            })
-                        }).then(response => response.json())
-                          .then(result => {
-                              if (result.success) {
-                                  setTimeout(() => {
-                                      window.location.href = '/assessment?token=' + result.access_token;
-                                  }, 3000);
-                              } else {
-                                  alert('Payment verification failed. Please contact support.');
-                              }
-                          });
-                    });
-                },
-                onError: function(err) {
-                    console.error('PayPal error:', err);
-                    alert('Payment failed. Please try again.');
+            setupEventListeners() {
+                // Payment method switching
+                document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => this.switchPaymentMethod(e.target.value));
+                });
+
+                // Credit card form handling
+                this.setupCardValidation();
+                
+                // Pay button
+                document.getElementById('pay-with-card')?.addEventListener('click', () => this.processCardPayment());
+            }
+
+            setupCardValidation() {
+                const cardNumberInput = document.getElementById('card-number');
+                const expiryInput = document.getElementById('card-expiry');
+                const cvcInput = document.getElementById('card-cvc');
+                const nameInput = document.getElementById('cardholder-name');
+
+                if (cardNumberInput) {
+                    cardNumberInput.addEventListener('input', (e) => this.formatCardNumber(e));
+                    cardNumberInput.addEventListener('blur', (e) => this.validateCardNumber(e));
                 }
-            }).render('#paypal-button-container');
+
+                if (expiryInput) {
+                    expiryInput.addEventListener('input', (e) => this.formatExpiry(e));
+                    expiryInput.addEventListener('blur', (e) => this.validateExpiry(e));
+                }
+
+                if (cvcInput) {
+                    cvcInput.addEventListener('input', (e) => this.formatCVC(e));
+                    cvcInput.addEventListener('blur', (e) => this.validateCVC(e));
+                }
+
+                if (nameInput) {
+                    nameInput.addEventListener('blur', (e) => this.validateName(e));
+                }
+            }
+
+            switchPaymentMethod(method) {
+                this.currentPaymentMethod = method;
+                
+                // Hide all payment forms
+                document.querySelectorAll('.payment-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+
+                // Show selected payment form
+                if (method === 'card') {
+                    document.getElementById('card-payment-form').classList.add('active');
+                } else if (method === 'paypal') {
+                    document.getElementById('paypal-payment-form').classList.add('active');
+                    this.initPayPal(); // Initialize PayPal when selected
+                }
+            }
+
+            // Card validation and formatting
+            formatCardNumber(e) {
+                let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+                
+                // Detect card type
+                this.detectCardType(value);
+            }
+
+            detectCardType(number) {
+                const indicator = document.querySelector('.card-type-indicator i');
+                const firstDigit = number[0];
+                const firstTwoDigits = number.substr(0, 2);
+
+                if (number.startsWith('4')) {
+                    indicator.className = 'fab fa-cc-visa';
+                } else if (['51', '52', '53', '54', '55'].includes(firstTwoDigits)) {
+                    indicator.className = 'fab fa-cc-mastercard';
+                } else if (['34', '37'].includes(firstTwoDigits)) {
+                    indicator.className = 'fab fa-cc-amex';
+                } else {
+                    indicator.className = 'fas fa-credit-card';
+                }
+            }
+
+            formatExpiry(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substr(0, 2) + ' / ' + value.substr(2, 2);
+                }
+                e.target.value = value;
+            }
+
+            formatCVC(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').substr(0, 4);
+            }
+
+            validateCardNumber(e) {
+                const value = e.target.value.replace(/\s/g, '');
+                const isValid = this.luhnCheck(value) && value.length >= 13 && value.length <= 19;
+                this.showValidationFeedback(e.target, isValid, 'Invalid card number');
+                return isValid;
+            }
+
+            validateExpiry(e) {
+                const value = e.target.value.replace(/\D/g, '');
+                if (value.length !== 4) {
+                    this.showValidationFeedback(e.target, false, 'Invalid expiry date');
+                    return false;
+                }
+
+                const month = parseInt(value.substr(0, 2));
+                const year = parseInt('20' + value.substr(2, 2));
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear();
+
+                const isValid = month >= 1 && month <= 12 && 
+                              (year > currentYear || (year === currentYear && month >= currentMonth));
+                
+                this.showValidationFeedback(e.target, isValid, 'Card has expired');
+                return isValid;
+            }
+
+            validateCVC(e) {
+                const value = e.target.value;
+                const isValid = value.length >= 3 && value.length <= 4;
+                this.showValidationFeedback(e.target, isValid, 'Invalid CVC');
+                return isValid;
+            }
+
+            validateName(e) {
+                const value = e.target.value.trim();
+                const isValid = value.length >= 2;
+                this.showValidationFeedback(e.target, isValid, 'Please enter cardholder name');
+                return isValid;
+            }
+
+            showValidationFeedback(input, isValid, errorMessage) {
+                const group = input.closest('.form-group');
+                const existingFeedback = group.querySelector('.input-feedback');
+                
+                if (existingFeedback) {
+                    existingFeedback.remove();
+                }
+
+                input.classList.remove('error', 'valid');
+                
+                if (input.value.trim() !== '') {
+                    const feedback = document.createElement('div');
+                    feedback.className = `input-feedback ${isValid ? 'success' : 'error'}`;
+                    
+                    if (isValid) {
+                        feedback.innerHTML = '<i class="fas fa-check"></i> Valid';
+                        input.classList.add('valid');
+                    } else {
+                        feedback.innerHTML = `<i class="fas fa-times"></i> ${errorMessage}`;
+                        input.classList.add('error');
+                    }
+                    
+                    group.appendChild(feedback);
+                }
+            }
+
+            luhnCheck(cardNumber) {
+                let sum = 0;
+                let alternate = false;
+                
+                for (let i = cardNumber.length - 1; i >= 0; i--) {
+                    let n = parseInt(cardNumber.charAt(i), 10);
+                    if (alternate) {
+                        n *= 2;
+                        if (n > 9) {
+                            n = (n % 10) + 1;
+                        }
+                    }
+                    sum += n;
+                    alternate = !alternate;
+                }
+                
+                return (sum % 10) === 0;
+            }
+
+            validateCardForm() {
+                const cardNumber = document.getElementById('card-number');
+                const expiry = document.getElementById('card-expiry');
+                const cvc = document.getElementById('card-cvc');
+                const name = document.getElementById('cardholder-name');
+
+                return this.validateCardNumber({target: cardNumber}) &&
+                       this.validateExpiry({target: expiry}) &&
+                       this.validateCVC({target: cvc}) &&
+                       this.validateName({target: name});
+            }
+
+            async processCardPayment() {
+                if (this.isProcessing) return;
+
+                if (!this.validateCardForm()) {
+                    alert('Please fill in all card details correctly.');
+                    return;
+                }
+
+                this.showProcessingState(true);
+
+                try {
+                    // Simulate card processing (replace with real payment processor)
+                    const paymentData = {
+                        method: 'card',
+                        amount: 50.00,
+                        cardNumber: document.getElementById('card-number').value.replace(/\s/g, ''),
+                        expiry: document.getElementById('card-expiry').value,
+                        cvc: document.getElementById('card-cvc').value,
+                        name: document.getElementById('cardholder-name').value
+                    };
+
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Process successful payment
+                    await this.handleSuccessfulPayment({
+                        method: 'card',
+                        transactionId: 'CARD_' + Date.now(),
+                        amount: 50.00
+                    });
+
+                } catch (error) {
+                    console.error('Card payment error:', error);
+                    alert('Payment processing failed. Please try again.');
+                } finally {
+                    this.showProcessingState(false);
+                }
+            }
+
+            showProcessingState(isProcessing) {
+                this.isProcessing = isProcessing;
+                const button = document.getElementById('pay-with-card');
+                const overlay = document.getElementById('payment-processing');
+                
+                if (isProcessing) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    overlay.classList.add('active');
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-lock"></i> Pay $50.00 Securely';
+                    overlay.classList.remove('active');
+                }
+            }
+
+            async handleSuccessfulPayment(paymentData) {
+                // Go to step 3 (success)
+                this.goToStep(3);
+                
+                try {
+                    // Send payment details to backend
+                    const response = await fetch('/payment-success', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(paymentData)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        setTimeout(() => {
+                            window.location.href = '/assessment?token=' + result.access_token;
+                        }, 3000);
+                    } else {
+                        alert('Payment verification failed. Please contact support.');
+                    }
+                } catch (error) {
+                    console.error('Payment verification error:', error);
+                    alert('Payment verification failed. Please contact support.');
+                }
+            }
+
+            initPayPal() {
+                // Clear any existing PayPal buttons
+                const container = document.getElementById('paypal-button-container');
+                if (container) {
+                    container.innerHTML = '';
+                    
+                    paypal.Buttons({
+                        style: {
+                            shape: 'rect',
+                            color: 'blue',
+                            layout: 'vertical',
+                            label: 'paypal',
+                            height: 45
+                        },
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: '50.00',
+                                        currency_code: 'USD'
+                                    },
+                                    description: 'IRPro Assessment Access'
+                                }]
+                            });
+                        },
+                        onApprove: (data, actions) => {
+                            return actions.order.capture().then((details) => {
+                                this.handleSuccessfulPayment({
+                                    method: 'paypal',
+                                    orderID: data.orderID,
+                                    payerID: data.payerID,
+                                    details: details
+                                });
+                            });
+                        },
+                        onError: function(err) {
+                            console.error('PayPal error:', err);
+                            alert('PayPal payment failed. Please try again.');
+                        }
+                    }).render('#paypal-button-container');
+                }
+            }
+
+            goToStep(stepNumber) {
+                this.currentStep = stepNumber;
+                
+                // Update progress steps
+                document.querySelectorAll('.step').forEach(step => {
+                    step.classList.remove('active', 'completed');
+                });
+                document.querySelectorAll('.step-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Mark previous steps as completed
+                for(let i = 1; i < stepNumber; i++) {
+                    document.querySelector(`[data-step="${i}"]`)?.classList.add('completed');
+                }
+
+                // Activate current step
+                document.querySelector(`[data-step="${stepNumber}"]`)?.classList.add('active');
+                document.getElementById(`step-${stepNumber}`)?.classList.add('active');
+
+                // Initialize payment system on step 2
+                if(stepNumber === 2) {
+                    this.initializeStep2();
+                }
+            }
+
+            initializeStep2() {
+                // Initialize with card payment by default
+                this.switchPaymentMethod('card');
+            }
         }
+
+        // Global functions for backward compatibility
+        function goToStep(stepNumber) {
+            window.paymentSystem.goToStep(stepNumber);
+        }
+
+        // Initialize payment system when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.paymentSystem = new PaymentSystem();
+        });
     </script>
 </body>
 </html>

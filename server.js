@@ -312,14 +312,60 @@ app.post('/submit', async (req, res) => {
   }
 });
 
-// Payment success handler
+// Enhanced payment success handler for both PayPal and Card payments
 app.post('/payment-success', async (req, res) => {
   try {
-    const { orderID, payerID, details } = req.body;
+    const paymentData = req.body;
+    const { method } = paymentData;
     
-    // Verify payment amount is $50
-    if (!details.purchase_units || details.purchase_units[0].amount.value !== '50.00') {
-      return res.json({ success: false, error: 'Invalid payment amount' });
+    console.log('Processing payment:', method, paymentData);
+    
+    let paymentId;
+    let payerEmail = 'customer@example.com'; // Default email
+    let isValidPayment = false;
+    
+    if (method === 'paypal') {
+      // Handle PayPal payment
+      const { orderID, payerID, details } = paymentData;
+      
+      // Verify PayPal payment amount is $50
+      if (!details.purchase_units || details.purchase_units[0].amount.value !== '50.00') {
+        return res.json({ success: false, error: 'Invalid PayPal payment amount' });
+      }
+      
+      paymentId = orderID;
+      payerEmail = details.payer.email_address || 'paypal-customer@example.com';
+      isValidPayment = true;
+      
+      console.log('PayPal payment verified:', orderID, details.payer.email_address);
+      
+    } else if (method === 'card') {
+      // Handle credit card payment
+      const { transactionId, amount, cardNumber, name } = paymentData;
+      
+      // Verify card payment amount is $50
+      if (amount !== 50.00) {
+        return res.json({ success: false, error: 'Invalid card payment amount' });
+      }
+      
+      // Basic card validation (in real app, use proper payment processor)
+      if (!cardNumber || !name || cardNumber.length < 13) {
+        return res.json({ success: false, error: 'Invalid card details' });
+      }
+      
+      // Simulate card processing (replace with real payment processor like Stripe)
+      paymentId = transactionId;
+      payerEmail = 'card-customer@example.com';
+      isValidPayment = true;
+      
+      console.log('Card payment processed:', transactionId, 'Card ending in:', cardNumber.slice(-4));
+      
+    } else {
+      return res.json({ success: false, error: 'Invalid payment method' });
+    }
+    
+    if (!isValidPayment) {
+      return res.json({ success: false, error: 'Payment validation failed' });
     }
     
     // Generate access token
@@ -328,16 +374,21 @@ app.post('/payment-success', async (req, res) => {
     
     // Store payment in database
     db.run(
-      'INSERT INTO payments (id, payment_id, amount, status, access_token, expires_at, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [uuidv4(), orderID, 50.00, 'completed', access_token, expires_at.toISOString(), details.payer.email_address],
+      'INSERT INTO payments (id, payment_id, amount, status, access_token, expires_at, email, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [uuidv4(), paymentId, 50.00, 'completed', access_token, expires_at.toISOString(), payerEmail, method],
       function(err) {
         if (err) {
           console.error('Database error:', err);
           return res.json({ success: false, error: 'Database error' });
         }
         
-        console.log('Payment recorded:', orderID, 'Access token:', access_token);
-        res.json({ success: true, access_token });
+        console.log(`${method.toUpperCase()} payment recorded:`, paymentId, 'Access token:', access_token);
+        res.json({ 
+          success: true, 
+          access_token,
+          payment_method: method,
+          expires_at: expires_at.toISOString()
+        });
       }
     );
     
