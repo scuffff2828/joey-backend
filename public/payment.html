@@ -22,53 +22,127 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
+            <!-- 3-Step Progress Indicator -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Service Selection</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Payment</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Assessment</div>
+                </div>
+            </div>
+
             <div class="payment-container">
-                <div class="payment-header">
-                    <h1>Professional Immunization Assessment</h1>
-                    <p>Complete, confidential assessment with professional PDF report</p>
+                <!-- Step 1: Service Selection -->
+                <div id="step-1" class="step-content active">
+                    <div class="payment-header">
+                        <h1>Professional Immunization Assessment</h1>
+                        <p>Complete, confidential assessment with professional PDF report</p>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="service-details">
+                            <h2>IRPro Assessment Service</h2>
+                            <div class="features-list">
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Complete 14-field medical assessment</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Professional PDF report generation</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Secure data processing</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Reference code for future inquiries</span>
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Email delivery of results</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pricing-section">
+                            <div class="price-display">
+                                <span class="currency">$</span>
+                                <span class="amount">50</span>
+                                <span class="period">one-time</span>
+                            </div>
+                            <p class="price-description">Single assessment with full report</p>
+                        </div>
+
+                        <button class="btn-continue" onclick="goToStep(2)">
+                            Continue to Payment
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="payment-card">
-                    <div class="service-details">
-                        <h2>IRPro Assessment Service</h2>
-                        <div class="features-list">
-                            <div class="feature">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Complete 14-field medical assessment</span>
-                            </div>
-                            <div class="feature">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Professional PDF report generation</span>
-                            </div>
-                            <div class="feature">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Secure data processing</span>
-                            </div>
-                            <div class="feature">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Reference code for future inquiries</span>
-                            </div>
-                            <div class="feature">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Email delivery of results</span>
-                            </div>
-                        </div>
+                <!-- Step 2: Payment -->
+                <div id="step-2" class="step-content">
+                    <div class="payment-header">
+                        <h1>Secure Payment</h1>
+                        <p>Pay $50 to access your professional assessment</p>
                     </div>
 
-                    <div class="pricing-section">
-                        <div class="price-display">
-                            <span class="currency">$</span>
-                            <span class="amount">50</span>
-                            <span class="period">one-time</span>
+                    <div class="payment-card">
+                        <div class="payment-summary">
+                            <h3>Order Summary</h3>
+                            <div class="order-item">
+                                <span>IRPro Assessment</span>
+                                <span>$50.00</span>
+                            </div>
+                            <div class="order-total">
+                                <span>Total</span>
+                                <span>$50.00</span>
+                            </div>
                         </div>
-                        <p class="price-description">Single assessment with full report</p>
+
+                        <div class="payment-section">
+                            <div id="paypal-button-container"></div>
+                            <div class="payment-security">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure payment processed by PayPal</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-back" onclick="goToStep(1)">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Service
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Processing -->
+                <div id="step-3" class="step-content">
+                    <div class="payment-header">
+                        <h1>Payment Successful</h1>
+                        <p>Redirecting to your assessment...</p>
                     </div>
 
-                    <div class="payment-section">
-                        <div id="paypal-button-container"></div>
-                        <div class="payment-security">
-                            <i class="fas fa-lock"></i>
-                            <span>Secure payment processed by PayPal</span>
+                    <div class="payment-card">
+                        <div class="success-animation">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="success-message">
+                            <h3>Payment Confirmed</h3>
+                            <p>Your payment of $50.00 has been processed successfully.</p>
+                            <p>You now have 24-hour access to the assessment form.</p>
+                        </div>
+                        <div class="loading-indicator">
+                            <div class="spinner"></div>
+                            <p>Preparing your assessment...</p>
                         </div>
                     </div>
                 </div>
@@ -99,47 +173,81 @@
     </div>
 
     <!-- PayPal SDK -->
-    <script src="https://www.paypal.com/sdk/js?client-id=sandbox&currency=USD"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYzBcHsqUGWJjY6-R_CfCz1ddLjY2gvqLaazgBsVy8iQfK4F7bHGz1iN_9zFEv1VJzKxOqpBgQ4uKjOv&currency=USD"></script>
     <script>
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: '50.00'
-                        },
-                        description: 'IRPro Assessment Access'
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    // Send payment details to backend
-                    return fetch('/payment-success', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            orderID: data.orderID,
-                            payerID: data.payerID,
-                            details: details
-                        })
-                    }).then(response => response.json())
-                      .then(result => {
-                          if (result.success) {
-                              window.location.href = '/assessment?token=' + result.access_token;
-                          } else {
-                              alert('Payment verification failed. Please contact support.');
-                          }
-                      });
-                });
-            },
-            onError: function(err) {
-                console.error('PayPal error:', err);
-                alert('Payment failed. Please try again.');
+        function goToStep(stepNumber) {
+            // Update progress steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Mark previous steps as completed
+            for(let i = 1; i < stepNumber; i++) {
+                document.querySelector(`[data-step="${i}"]`).classList.add('completed');
             }
-        }).render('#paypal-button-container');
+
+            // Activate current step
+            document.querySelector(`[data-step="${stepNumber}"]`).classList.add('active');
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+            // Initialize PayPal on step 2
+            if(stepNumber === 2) {
+                initPayPal();
+            }
+        }
+
+        function initPayPal() {
+            // Clear any existing PayPal buttons
+            document.getElementById('paypal-button-container').innerHTML = '';
+            
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '50.00'
+                            },
+                            description: 'IRPro Assessment Access'
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        // Go to step 3 (success)
+                        goToStep(3);
+                        
+                        // Send payment details to backend
+                        return fetch('/payment-success', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                orderID: data.orderID,
+                                payerID: data.payerID,
+                                details: details
+                            })
+                        }).then(response => response.json())
+                          .then(result => {
+                              if (result.success) {
+                                  setTimeout(() => {
+                                      window.location.href = '/assessment?token=' + result.access_token;
+                                  }, 3000);
+                              } else {
+                                  alert('Payment verification failed. Please contact support.');
+                              }
+                          });
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('Payment failed. Please try again.');
+                }
+            }).render('#paypal-button-container');
+        }
     </script>
 </body>
 </html>
