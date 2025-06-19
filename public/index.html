@@ -3,215 +3,1843 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="IRPro - Professional Immunization Assessment">
-    <title>IRPro - IR Intake Form</title>
-    <link rel="stylesheet" href="./styles.css">
+    <title>IRPro - Complete Immunization Assessment System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===============================
+           COMPLETE SYSTEM CSS
+           =============================== */
+        
+        :root {
+            --color-primary: #007bff;
+            --color-secondary: #ffffff;
+            --color-success: #28a745;
+            --color-error: #dc3545;
+            --color-warning: #ffc107;
+            --color-text: #212529;
+            --color-border: #e9ecef;
+            --border-radius: 8px;
+            --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --transition-smooth: all 0.3s ease;
+            --font-size-sm: 0.875rem;
+            --font-size-lg: 1.125rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .nav-header {
+            background: var(--color-primary);
+            color: var(--color-secondary);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,123,255,0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        /* Steps Progress */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .step-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: var(--transition-smooth);
+        }
+
+        .step.active .step-number {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(0,123,255,0.2);
+        }
+
+        .step.active .step-title {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .step.completed .step-number {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .step.completed .step-title {
+            color: var(--color-success);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #0056b3 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .section-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Service Selection */
+        .service-card {
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .service-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .service-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .feature i {
+            color: var(--color-success);
+            font-size: 1.1rem;
+        }
+
+        .pricing {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            border-radius: var(--border-radius);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .price-currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: #6c757d;
+            margin-left: 0.5rem;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin: 2rem 0;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .payment-option {
+            position: relative;
+        }
+
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .payment-option label {
+            display: block;
+            padding: 1.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            background: white;
+            text-align: center;
+        }
+
+        .payment-option label:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+
+        .payment-option input[type="radio"]:checked + label {
+            border-color: var(--color-primary);
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+        }
+
+        .payment-option-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .payment-option-content i {
+            font-size: 2.5rem;
+            color: var(--color-primary);
+        }
+
+        .payment-option-content span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-logos {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .card-logos i {
+            font-size: 1.5rem !important;
+            color: #6c757d;
+        }
+
+        /* Payment Forms */
+        .payment-form {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .payment-form.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .card-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-group input.error {
+            border-color: var(--color-error);
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
+        }
+
+        .form-group input.valid {
+            border-color: var(--color-success);
+            box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .card-type-indicator {
+            position: absolute;
+            right: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3rem;
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        .input-feedback {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .input-feedback.success {
+            color: var(--color-success);
+        }
+
+        .input-feedback.error {
+            color: var(--color-error);
+        }
+
+        .demo-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .demo-info small {
+            color: #0066cc;
+            font-weight: 500;
+        }
+
+        /* PayPal Section */
+        .paypal-section {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            border: 1px solid #e9ecef;
+        }
+
+        /* Assessment Form */
+        .assessment-form {
+            margin-top: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            background: white;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group small {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #0056b3 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3 0%, var(--color-primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,123,255,0.25);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--color-success) 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #20c997 0%, var(--color-success) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40,167,69,0.25);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        /* Payment Notice */
+        .payment-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .notice-icon {
+            font-size: 2rem;
+            color: #856404;
+            margin-top: 0.25rem;
+        }
+
+        .notice-content h3 {
+            color: #856404;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .notice-content p {
+            color: #664d03;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Security Indicators */
+        .security-indicators {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            border: 1px solid rgba(40,167,69,0.2);
+        }
+
+        .security-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.25rem;
+        }
+
+        .security-item i {
+            font-size: 1.2rem;
+            color: var(--color-success);
+        }
+
+        .security-item span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #155724;
+        }
+
+        /* Progress Bar */
+        .form-progress {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-success) 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--color-success);
+        }
+
+        .success-message i {
+            font-size: 4rem;
+            color: var(--color-success);
+            margin-bottom: 1rem;
+        }
+
+        .reference-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border: 2px solid var(--color-primary);
+        }
+
+        /* Processing Overlay */
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .processing-overlay.active {
+            display: flex;
+        }
+
+        .processing-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-subtext {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Footer */
+        .app-footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+            }
+            
+            .progress-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .progress-steps::before {
+                display: none;
+            }
+            
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .security-indicators {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .security-item {
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            
+            .section-header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .section-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .section-content {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .price {
+                font-size: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Navigation Header -->
+        <!-- Header -->
         <header class="nav-header">
             <div class="nav-content">
                 <div class="logo">
                     <i class="fas fa-shield-virus"></i>
-                    <span>IRPro</span>
+                    <span>IRPro Complete System</span>
+                </div>
+                <div class="system-status">
+                    <i class="fas fa-lock"></i>
+                    <span>Secure & Encrypted</span>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <main class="main-content">
-            <div class="stage-header">
-                <h1>IR Intake Assessment</h1>
-                <p>Complete all required fields for professional immunization assessment</p>
-                <div class="assessment-info">
-                    <div class="info-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Estimated time: 5-10 minutes</span>
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Service Information</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Assessment Form</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Secure Payment</div>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Completion</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Service Information -->
+            <div id="step-1" class="content-section active">
+                <div class="section-header">
+                    <h1>Professional Immunization Assessment</h1>
+                    <p>Complete medical assessment with professional PDF report and expert guidance</p>
+                </div>
+                <div class="section-content">
+                    <!-- Payment Notice -->
+                    <div class="payment-notice">
+                        <div class="notice-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="notice-content">
+                            <h3>Payment Required</h3>
+                            <p><strong>A one-time payment of $50.00 is required</strong> to access this professional immunization assessment service. Payment will be processed securely after you complete the assessment form.</p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>All data encrypted and secure</span>
+
+                    <div class="service-card">
+                        <h2>IRPro Complete Assessment Service</h2>
+                        <div class="service-features">
+                            <div class="feature">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Complete 14-field medical assessment</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>Professional PDF report generation</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secure data processing & storage</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-code"></i>
+                                <span>Unique reference code tracking</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email delivery of results</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-clock"></i>
+                                <span>24-hour access validity</span>
+                            </div>
+                        </div>
+                        <div class="pricing">
+                            <div class="price">
+                                <span class="price-currency">$</span>50<span class="price-period">one-time</span>
+                            </div>
+                            <p>Single comprehensive assessment with full professional report</p>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="goToStep(2)">
+                            <i class="fas fa-arrow-right"></i>
+                            Start Assessment Form
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <form id="irpro-form" class="intake-form">
-                <div class="form-grid">
-                    <!-- 1. Assessment Type -->
-                    <div class="form-group full-width">
-                        <label for="assessmentType">1. Assessment Type *</label>
-                        <select id="assessmentType" name="assessment_type" required>
-                            <option value="">Select Assessment Type</option>
-                            <option value="California K-12 School">California K-12 School</option>
-                            <option value="US Immigration I-693">US Immigration I-693</option>
-                        </select>
-                    </div>
-
-                    <!-- 2 & 3. Patient Name -->
-                    <div class="form-group">
-                        <label for="firstName">2. First Name *</label>
-                        <input type="text" id="firstName" name="first_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">3. Last Name *</label>
-                        <input type="text" id="lastName" name="last_name" required>
-                    </div>
-
-                    <!-- 4. Date of Birth -->
-                    <div class="form-group">
-                        <label for="dateOfBirth">4. Date of Birth *</label>
-                        <input type="date" id="dateOfBirth" name="date_of_birth" required>
-                    </div>
-
-                    <!-- 5. Gender -->
-                    <div class="form-group">
-                        <label for="gender">5. Gender *</label>
-                        <select id="gender" name="gender" required>
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <!-- 6. Grade Entering -->
-                    <div class="form-group">
-                        <label for="gradeEntering">6. Grade Entering</label>
-                        <input type="text" id="gradeEntering" name="grade_entering" placeholder="e.g., K, 1st, 7th, 12th">
-                    </div>
-
-                    <!-- 7. Birth location - Name of school -->
-                    <div class="form-group full-width">
-                        <label for="schoolName">7. Birth location - Name of school</label>
-                        <input type="text" id="schoolName" name="school_name" placeholder="e.g., Lincoln Elementary School">
-                    </div>
-
-                    <!-- 8. Country of Birth -->
-                    <div class="form-group">
-                        <label for="countryOfBirth">8. Country of Birth *</label>
-                        <select id="countryOfBirth" name="country_of_birth" required>
-                            <option value="">Select Country</option>
-                            <option value="United States">United States</option>
-                            <option value="Mexico">Mexico</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <!-- 9. Start-Up or Catch-Up: If Catch-Up, date to start next vaccination -->
-                    <div class="form-group full-width">
-                        <label for="startupCatchup">9. Start-Up or Catch-Up: If Catch-Up, date to start next vaccination *</label>
-                        <select id="startupCatchup" name="startup_catchup" required>
-                            <option value="">Select Type</option>
-                            <option value="Start-Up">Start-Up</option>
-                            <option value="Catch-Up">Catch-Up</option>
-                        </select>
-                    </div>
-
-                    <!-- Catch-Up Date Field -->
-                    <div class="form-group" id="catchupDateField" style="display: none;">
-                        <label for="catchupDate">Date to start next vaccination</label>
-                        <input type="date" id="catchupDate" name="catchup_date">
-                    </div>
-
-                    <!-- 10. Previous Immunization Records Required -->
-                    <div class="form-group">
-                        <label for="previousRecords">10. Previous Immunization Records Required *</label>
-                        <select id="previousRecords" name="previous_records" required>
-                            <option value="">Select Status</option>
-                            <option value="Complete">Complete</option>
-                            <option value="Partial">Partial</option>
-                            <option value="None">None</option>
-                        </select>
-                    </div>
-
-                    <!-- 11. CAIR/MRN -->
-                    <div class="form-group full-width">
-                        <label for="cairMrn">11. CAIR/MRN</label>
-                        <input type="text" id="cairMrn" name="cair_mrn" placeholder="e.g., CA123456789 or leave blank">
-                        <small><strong>CAIR preferred</strong> (California Immunization Registry). MRN is found on your insurance card. Leave blank if you don't have either - one will be assigned.</small>
-                    </div>
-
-                    <!-- 12. Medical Conditions/Allergies -->
-                    <div class="form-group full-width">
-                        <label for="allergiesReactions">12. Allergies or Reactions to Vaccines? *</label>
-                        <select id="allergiesReactions" name="allergies_reactions" required>
-                            <option value="">Select option</option>
-                            <option value="No">No</option>
-                            <option value="Yes">Yes</option>
-                        </select>
-                    </div>
-
-                    <!-- If yes, list details -->
-                    <div class="form-group full-width" id="allergyDetailsGroup" style="display: none;">
-                        <label for="allergyDetails">If yes, list details.</label>
-                        <textarea id="allergyDetails" name="allergy_details" rows="3" placeholder="Please describe specific allergies or reactions to vaccines..."></textarea>
-                    </div>
-
-                    <!-- 13. Hospital Birth -->
-                    <div class="form-group full-width">
-                        <label>13. Hospital Birth? *</label>
-                        <div style="display: flex; gap: 20px;">
-                            <label><input type="radio" name="hospital_birth" value="Yes" required> Yes</label>
-                            <label><input type="radio" name="hospital_birth" value="No" required> No</label>
+            <!-- Step 2: Assessment Form -->
+            <div id="step-2" class="content-section">
+                <div class="section-header">
+                    <h1>IR Intake Assessment</h1>
+                    <p>Complete all required fields for professional immunization assessment</p>
+                </div>
+                <div class="section-content">
+                    <!-- Progress Bar -->
+                    <div class="form-progress" id="form-progress">
+                        <div class="progress-header">
+                            <span class="progress-label">Form Completion</span>
+                            <span class="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
                         </div>
                     </div>
 
-                    <!-- Hospital Birth Details -->
-                    <div class="form-group full-width" id="hospitalDetailsGroup" style="display: none;">
-                        <label for="hospitalDetails">If yes to hospital birth, name, city and state of hospital</label>
-                        <input type="text" id="hospitalDetails" name="hospital_details" placeholder="e.g., Mercy Hospital, Los Angeles, CA">
-                    </div>
+                    <form id="assessment-form" class="assessment-form">
+                        <div class="form-grid">
+                            <!-- 1. Assessment Type -->
+                            <div class="form-group full-width">
+                                <label for="assessment-type">1. Assessment Type *</label>
+                                <select id="assessment-type" name="assessment_type" required>
+                                    <option value="">Select Assessment Type</option>
+                                    <option value="California K-12 School">California K-12 School</option>
+                                    <option value="US Immigration I-693">US Immigration I-693</option>
+                                </select>
+                            </div>
 
-                    <!-- Physician to use for record -->
-                    <div class="form-group full-width">
-                        <label for="physicianRecord">Physician to use for record – Name and address</label>
-                        <textarea id="physicianRecord" name="physician_record" rows="3" placeholder="e.g., Dr. Smith, 123 Main St, City, State 12345"></textarea>
-                    </div>
+                            <!-- 2 & 3. Patient Name -->
+                            <div class="form-group">
+                                <label for="first-name">2. First Name *</label>
+                                <input type="text" id="first-name" name="first_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">3. Last Name *</label>
+                                <input type="text" id="last-name" name="last_name" required>
+                            </div>
 
-                    <!-- 14. Email Address -->
-                    <div class="form-group full-width">
-                        <label for="email">14. Email Address *</label>
-                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
-                    </div>
+                            <!-- 4. Date of Birth -->
+                            <div class="form-group">
+                                <label for="date-of-birth">4. Date of Birth *</label>
+                                <input type="date" id="date-of-birth" name="date_of_birth" required>
+                            </div>
 
-                    <!-- Developer Mode Hidden Field -->
-                    <input type="hidden" id="developerMode" name="developer_mode" value="false">
-                </div>
+                            <!-- 5. Gender -->
+                            <div class="form-group">
+                                <label for="gender">5. Gender *</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                        Submit Assessment
+                            <!-- 6. Grade Entering -->
+                            <div class="form-group">
+                                <label for="grade-entering">6. Grade Entering</label>
+                                <input type="text" id="grade-entering" name="grade_entering" placeholder="e.g., K, 1st, 7th, 12th">
+                            </div>
+
+                            <!-- 7. School Name -->
+                            <div class="form-group full-width">
+                                <label for="school-name">7. Birth location - Name of school</label>
+                                <input type="text" id="school-name" name="school_name" placeholder="e.g., Lincoln Elementary School">
+                            </div>
+
+                            <!-- 8. Country of Birth -->
+                            <div class="form-group">
+                                <label for="country-of-birth">8. Country of Birth *</label>
+                                <select id="country-of-birth" name="country_of_birth" required>
+                                    <option value="">Select Country</option>
+                                    <option value="United States">United States</option>
+                                    <option value="Mexico">Mexico</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- 9. Start-Up or Catch-Up -->
+                            <div class="form-group full-width">
+                                <label for="startup-catchup">9. Start-Up or Catch-Up: If Catch-Up, date to start next vaccination *</label>
+                                <select id="startup-catchup" name="startup_catchup" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Start-Up">Start-Up</option>
+                                    <option value="Catch-Up">Catch-Up</option>
+                                </select>
+                            </div>
+
+                            <!-- Catch-Up Date Field -->
+                            <div class="form-group" id="catchup-date-field" style="display: none;">
+                                <label for="catchup-date">Date to start next vaccination</label>
+                                <input type="date" id="catchup-date" name="catchup_date">
+                            </div>
+
+                            <!-- 10. Previous Immunization Records -->
+                            <div class="form-group">
+                                <label for="previous-records">10. Previous Immunization Records Required *</label>
+                                <select id="previous-records" name="previous_records" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Partial">Partial</option>
+                                    <option value="None">None</option>
+                                </select>
+                            </div>
+
+                            <!-- 11. CAIR/MRN -->
+                            <div class="form-group full-width">
+                                <label for="cair-mrn">11. CAIR/MRN</label>
+                                <input type="text" id="cair-mrn" name="cair_mrn" placeholder="e.g., CA123456789 or leave blank">
+                                <small><strong>CAIR preferred</strong> (California Immunization Registry). MRN is found on your insurance card. Leave blank if you don't have either - one will be assigned.</small>
+                            </div>
+
+                            <!-- 12. Allergies -->
+                            <div class="form-group full-width">
+                                <label for="allergies-reactions">12. Allergies or Reactions to Vaccines? *</label>
+                                <select id="allergies-reactions" name="allergies_reactions" required>
+                                    <option value="">Select option</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+
+                            <!-- Allergy Details -->
+                            <div class="form-group full-width" id="allergy-details-group" style="display: none;">
+                                <label for="allergy-details">If yes, list details.</label>
+                                <textarea id="allergy-details" name="allergy_details" rows="3" placeholder="Please describe specific allergies or reactions to vaccines..."></textarea>
+                            </div>
+
+                            <!-- 13. Hospital Birth -->
+                            <div class="form-group full-width">
+                                <label>13. Hospital Birth? *</label>
+                                <div style="display: flex; gap: 20px; margin-top: 0.5rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                        <input type="radio" name="hospital_birth" value="Yes" required> Yes
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                        <input type="radio" name="hospital_birth" value="No" required> No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Hospital Details -->
+                            <div class="form-group full-width" id="hospital-details-group" style="display: none;">
+                                <label for="hospital-details">If yes to hospital birth, name, city and state of hospital</label>
+                                <input type="text" id="hospital-details" name="hospital_details" placeholder="e.g., Mercy Hospital, Los Angeles, CA">
+                            </div>
+
+                            <!-- Physician -->
+                            <div class="form-group full-width">
+                                <label for="physician-record">Physician to use for record – Name and address</label>
+                                <textarea id="physician-record" name="physician_record" rows="3" placeholder="e.g., Dr. Smith, 123 Main St, City, State 12345"></textarea>
+                            </div>
+
+                            <!-- 14. Email Address -->
+                            <div class="form-group full-width">
+                                <label for="email">14. Email Address *</label>
+                                <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                            </div>
+
+                            <!-- Hidden Fields -->
+                            <input type="hidden" id="developer-mode" name="developer_mode" value="false">
+                            <input type="hidden" id="payment-method" name="payment_method" value="">
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-full" onclick="goToStep(3)">
+                            <i class="fas fa-arrow-right"></i>
+                            Continue to Payment
+                        </button>
+                        
+                        <button type="submit" class="btn btn-success btn-full" id="submit-assessment" style="display: none;">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Assessment
+                        </button>
+                    </form>
+
+                    <button class="btn btn-primary" onclick="goToStep(1)" style="margin-top: 2rem;">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Service
                     </button>
                 </div>
-            </form>
+            </div>
 
-            <!-- Success Message -->
-            <div id="successMessage" class="success-message" style="display: none;">
-                <div class="success-content">
-                    <i class="fas fa-check-circle"></i>
-                    <h2>Assessment Completed!</h2>
-                    <p>Your IR Intake assessment has been completed.</p>
-                    <a href="javascript:location.reload()" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <!-- Step 3: Secure Payment -->
+            <div id="step-3" class="content-section">
+                <div class="section-header">
+                    <h1>Secure Payment</h1>
+                    <p>Complete your payment to access the professional assessment service</p>
+                </div>
+                <div class="section-content">
+                    <!-- Order Summary -->
+                    <div class="service-card">
+                        <h3>Order Summary</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 6px;">
+                            <span style="font-weight: 600;">IRPro Assessment Service</span>
+                            <span style="font-weight: 700; font-size: 1.2rem; color: var(--color-primary);">$50.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="payment-methods">
+                        <h3>Choose Payment Method</h3>
+                        <div class="payment-options">
+                            <div class="payment-option">
+                                <input type="radio" id="card-payment" name="payment-method" value="card" checked>
+                                <label for="card-payment">
+                                    <div class="payment-option-content">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span>Credit / Debit Card</span>
+                                        <div class="card-logos">
+                                            <i class="fab fa-cc-visa"></i>
+                                            <i class="fab fa-cc-mastercard"></i>
+                                            <i class="fab fa-cc-amex"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" id="paypal-payment" name="payment-method" value="paypal">
+                                <label for="paypal-payment">
+                                    <div class="payment-option-content">
+                                        <i class="fab fa-paypal"></i>
+                                        <span>PayPal</span>
+                                        <small>Pay with your PayPal account</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Credit Card Form -->
+                        <div id="card-form" class="payment-form active">
+                            <div class="card-form">
+                                <h4>Card Information</h4>
+                                <div class="form-group">
+                                    <label for="card-number">Card Number</label>
+                                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                                    <div class="card-type-indicator">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="card-expiry">Expiry Date</label>
+                                        <input type="text" id="card-expiry" placeholder="MM / YY" maxlength="7">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="card-cvc">CVC</label>
+                                        <input type="text" id="card-cvc" placeholder="123" maxlength="4">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardholder-name">Cardholder Name</label>
+                                    <input type="text" id="cardholder-name" placeholder="Full name on card">
+                                </div>
+                                <div class="demo-info">
+                                    <small><strong>Demo Mode:</strong> Use test card: 4242 4242 4242 4242, any future date, any CVC</small>
+                                </div>
+                                <button type="button" class="btn btn-success btn-full" id="pay-with-card">
+                                    <i class="fas fa-lock"></i>
+                                    Pay $50.00 Securely
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- PayPal Form -->
+                        <div id="paypal-form" class="payment-form">
+                            <div class="paypal-section">
+                                <h4>PayPal Payment</h4>
+                                <p>You will be redirected to PayPal to complete your payment securely.</p>
+                                <div id="paypal-button-container"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Indicators -->
+                    <div class="security-indicators">
+                        <div class="security-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>256-bit SSL Encryption</span>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-lock"></i>
+                            <span>PCI DSS Compliant</span>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-user-shield"></i>
+                            <span>100% Secure Payment</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="goToStep(2)" style="margin-top: 2rem;">
                         <i class="fas fa-arrow-left"></i>
-                        New Assessment
-                    </a>
+                        Back to Assessment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Completion -->
+            <div id="step-4" class="content-section">
+                <div class="section-content">
+                    <div class="success-message">
+                        <i class="fas fa-check-circle"></i>
+                        <h2>Assessment Completed Successfully!</h2>
+                        <p>Your IR Intake assessment has been processed and your professional report is being generated.</p>
+                        <div class="reference-code" id="reference-code-display">
+                            <!-- Reference code will be displayed here -->
+                        </div>
+                        <div style="margin: 2rem 0;">
+                            <p><strong>IMPORTANT: Please save your reference code!</strong></p>
+                            <p>You will need this code for all future inquiries about your submission.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            <i class="fas fa-arrow-left"></i>
+                            New Assessment
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
 
+        <!-- Processing Overlay -->
+        <div id="processing-overlay" class="processing-overlay">
+            <div class="processing-spinner"></div>
+            <div class="processing-text">Processing your payment...</div>
+            <div class="processing-subtext">Please do not close this window</div>
+        </div>
+
         <!-- Footer -->
         <footer class="app-footer">
             <div class="footer-content">
-                <p>&copy; 2025 IRPro. Professional Immunization Assessment by JoeyDirt333.</p>
+                <p>&copy; 2025 IRPro. Professional Immunization Assessment System by IRPro Development Team.</p>
             </div>
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AYzBcHsqUGWJjY6-R_CfCz1ddLjY2gvqLaazgBsVy8iQfK4F7bHGz1iN_9zFEv1VJzKxOqpBgQ4uKjOv&currency=USD"></script>
+    
+    <script>
+        // ===============================
+        // COMPLETE SYSTEM JAVASCRIPT
+        // ===============================
+
+        class IRProCompleteSystem {
+            constructor() {
+                this.currentStep = 1;
+                this.currentPaymentMethod = 'card';
+                this.isProcessing = false;
+                this.paymentCompleted = false;
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.setupFormValidation();
+                this.setupConditionalFields();
+                this.updateFormProgress();
+            }
+
+            setupEventListeners() {
+                // Payment method switching
+                document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => this.switchPaymentMethod(e.target.value));
+                });
+
+                // Credit card form handling
+                this.setupCardValidation();
+                
+                // Pay button
+                document.getElementById('pay-with-card')?.addEventListener('click', () => this.processCardPayment());
+
+                // Assessment form submission
+                document.getElementById('assessment-form')?.addEventListener('submit', (e) => this.handleFormSubmit(e));
+
+                // Form progress tracking
+                const formInputs = document.querySelectorAll('#assessment-form input, #assessment-form select, #assessment-form textarea');
+                formInputs.forEach(input => {
+                    input.addEventListener('input', () => this.updateFormProgress());
+                    input.addEventListener('change', () => this.updateFormProgress());
+                });
+
+                // Developer mode
+                document.getElementById('first-name')?.addEventListener('input', () => this.checkDeveloperMode());
+                document.getElementById('last-name')?.addEventListener('input', () => this.checkDeveloperMode());
+            }
+
+            setupCardValidation() {
+                const cardNumberInput = document.getElementById('card-number');
+                const expiryInput = document.getElementById('card-expiry');
+                const cvcInput = document.getElementById('card-cvc');
+                const nameInput = document.getElementById('cardholder-name');
+
+                if (cardNumberInput) {
+                    cardNumberInput.addEventListener('input', (e) => this.formatCardNumber(e));
+                    cardNumberInput.addEventListener('blur', (e) => this.validateCardNumber(e));
+                }
+
+                if (expiryInput) {
+                    expiryInput.addEventListener('input', (e) => this.formatExpiry(e));
+                    expiryInput.addEventListener('blur', (e) => this.validateExpiry(e));
+                }
+
+                if (cvcInput) {
+                    cvcInput.addEventListener('input', (e) => this.formatCVC(e));
+                    cvcInput.addEventListener('blur', (e) => this.validateCVC(e));
+                }
+
+                if (nameInput) {
+                    nameInput.addEventListener('blur', (e) => this.validateName(e));
+                }
+            }
+
+            setupConditionalFields() {
+                // Allergies conditional field
+                document.getElementById('allergies-reactions')?.addEventListener('change', (e) => {
+                    const detailsGroup = document.getElementById('allergy-details-group');
+                    detailsGroup.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                });
+
+                // Start-Up or Catch-Up conditional field
+                document.getElementById('startup-catchup')?.addEventListener('change', (e) => {
+                    const catchupField = document.getElementById('catchup-date-field');
+                    catchupField.style.display = e.target.value === 'Catch-Up' ? 'block' : 'none';
+                });
+
+                // Hospital birth conditional field
+                document.querySelectorAll('input[name="hospital_birth"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        const hospitalGroup = document.getElementById('hospital-details-group');
+                        hospitalGroup.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                    });
+                });
+            }
+
+            setupFormValidation() {
+                const inputs = document.querySelectorAll('#assessment-form input, #assessment-form select, #assessment-form textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', (e) => this.validateField(e));
+                    input.addEventListener('input', (e) => this.clearValidation(e));
+                });
+            }
+
+            switchPaymentMethod(method) {
+                this.currentPaymentMethod = method;
+                
+                // Hide all payment forms
+                document.querySelectorAll('.payment-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+
+                // Show selected payment form
+                if (method === 'card') {
+                    document.getElementById('card-form').classList.add('active');
+                } else if (method === 'paypal') {
+                    document.getElementById('paypal-form').classList.add('active');
+                    this.initPayPal(); // Initialize PayPal when selected
+                }
+            }
+
+            // Card validation and formatting methods
+            formatCardNumber(e) {
+                let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+                this.detectCardType(value);
+            }
+
+            detectCardType(number) {
+                const indicator = document.querySelector('.card-type-indicator i');
+                const firstTwoDigits = number.substr(0, 2);
+
+                if (number.startsWith('4')) {
+                    indicator.className = 'fab fa-cc-visa';
+                } else if (['51', '52', '53', '54', '55'].includes(firstTwoDigits)) {
+                    indicator.className = 'fab fa-cc-mastercard';
+                } else if (['34', '37'].includes(firstTwoDigits)) {
+                    indicator.className = 'fab fa-cc-amex';
+                } else {
+                    indicator.className = 'fas fa-credit-card';
+                }
+            }
+
+            formatExpiry(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substr(0, 2) + ' / ' + value.substr(2, 2);
+                }
+                e.target.value = value;
+            }
+
+            formatCVC(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '').substr(0, 4);
+            }
+
+            validateCardNumber(e) {
+                const value = e.target.value.replace(/\s/g, '');
+                const isValid = this.luhnCheck(value) && value.length >= 13 && value.length <= 19;
+                this.showValidationFeedback(e.target, isValid, 'Invalid card number');
+                return isValid;
+            }
+
+            validateExpiry(e) {
+                const value = e.target.value.replace(/\D/g, '');
+                if (value.length !== 4) {
+                    this.showValidationFeedback(e.target, false, 'Invalid expiry date');
+                    return false;
+                }
+
+                const month = parseInt(value.substr(0, 2));
+                const year = parseInt('20' + value.substr(2, 2));
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1;
+                const currentYear = currentDate.getFullYear();
+
+                const isValid = month >= 1 && month <= 12 && 
+                              (year > currentYear || (year === currentYear && month >= currentMonth));
+                
+                this.showValidationFeedback(e.target, isValid, 'Card has expired');
+                return isValid;
+            }
+
+            validateCVC(e) {
+                const value = e.target.value;
+                const isValid = value.length >= 3 && value.length <= 4;
+                this.showValidationFeedback(e.target, isValid, 'Invalid CVC');
+                return isValid;
+            }
+
+            validateName(e) {
+                const value = e.target.value.trim();
+                const isValid = value.length >= 2;
+                this.showValidationFeedback(e.target, isValid, 'Please enter cardholder name');
+                return isValid;
+            }
+
+            showValidationFeedback(input, isValid, errorMessage) {
+                const group = input.closest('.form-group');
+                const existingFeedback = group.querySelector('.input-feedback');
+                
+                if (existingFeedback) {
+                    existingFeedback.remove();
+                }
+
+                input.classList.remove('error', 'valid');
+                
+                if (input.value.trim() !== '') {
+                    const feedback = document.createElement('div');
+                    feedback.className = `input-feedback ${isValid ? 'success' : 'error'}`;
+                    
+                    if (isValid) {
+                        feedback.innerHTML = '<i class="fas fa-check"></i> Valid';
+                        input.classList.add('valid');
+                    } else {
+                        feedback.innerHTML = `<i class="fas fa-times"></i> ${errorMessage}`;
+                        input.classList.add('error');
+                    }
+                    
+                    group.appendChild(feedback);
+                }
+            }
+
+            luhnCheck(cardNumber) {
+                let sum = 0;
+                let alternate = false;
+                
+                for (let i = cardNumber.length - 1; i >= 0; i--) {
+                    let n = parseInt(cardNumber.charAt(i), 10);
+                    if (alternate) {
+                        n *= 2;
+                        if (n > 9) {
+                            n = (n % 10) + 1;
+                        }
+                    }
+                    sum += n;
+                    alternate = !alternate;
+                }
+                
+                return (sum % 10) === 0;
+            }
+
+            validateCardForm() {
+                const cardNumber = document.getElementById('card-number');
+                const expiry = document.getElementById('card-expiry');
+                const cvc = document.getElementById('card-cvc');
+                const name = document.getElementById('cardholder-name');
+
+                return this.validateCardNumber({target: cardNumber}) &&
+                       this.validateExpiry({target: expiry}) &&
+                       this.validateCVC({target: cvc}) &&
+                       this.validateName({target: name});
+            }
+
+            async processCardPayment() {
+                if (this.isProcessing) return;
+
+                if (!this.validateCardForm()) {
+                    alert('Please fill in all card details correctly.');
+                    return;
+                }
+
+                this.showProcessingState(true);
+
+                try {
+                    // Simulate card processing
+                    const paymentData = {
+                        method: 'card',
+                        amount: 50.00,
+                        cardNumber: document.getElementById('card-number').value.replace(/\s/g, ''),
+                        expiry: document.getElementById('card-expiry').value,
+                        cvc: document.getElementById('card-cvc').value,
+                        name: document.getElementById('cardholder-name').value
+                    };
+
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Process successful payment
+                    await this.handleSuccessfulPayment({
+                        method: 'card',
+                        transactionId: 'CARD_' + Date.now(),
+                        amount: 50.00
+                    });
+
+                } catch (error) {
+                    console.error('Card payment error:', error);
+                    alert('Payment processing failed. Please try again.');
+                } finally {
+                    this.showProcessingState(false);
+                }
+            }
+
+            showProcessingState(isProcessing) {
+                this.isProcessing = isProcessing;
+                const button = document.getElementById('pay-with-card');
+                const overlay = document.getElementById('processing-overlay');
+                
+                if (isProcessing) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    overlay.classList.add('active');
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-lock"></i> Pay $50.00 Securely';
+                    overlay.classList.remove('active');
+                }
+            }
+
+            async handleSuccessfulPayment(paymentData) {
+                this.paymentCompleted = true;
+                document.getElementById('payment-method').value = paymentData.method;
+                
+                // Show submit button and hide continue to payment button
+                document.getElementById('submit-assessment').style.display = 'block';
+                document.querySelector('button[onclick="goToStep(3)"]').style.display = 'none';
+                
+                // Go back to step 2 to submit assessment
+                this.goToStep(2);
+                
+                // Show a success message
+                alert('Payment successful! Please review and submit your assessment form.');
+                
+                // Note: In a real implementation, you would verify payment with backend
+                console.log('Payment completed:', paymentData);
+            }
+
+            initPayPal() {
+                const container = document.getElementById('paypal-button-container');
+                if (container) {
+                    container.innerHTML = '';
+                    
+                    paypal.Buttons({
+                        style: {
+                            shape: 'rect',
+                            color: 'blue',
+                            layout: 'vertical',
+                            label: 'paypal',
+                            height: 45
+                        },
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: '50.00',
+                                        currency_code: 'USD'
+                                    },
+                                    description: 'IRPro Assessment Access'
+                                }]
+                            });
+                        },
+                        onApprove: (data, actions) => {
+                            return actions.order.capture().then((details) => {
+                                this.handleSuccessfulPayment({
+                                    method: 'paypal',
+                                    orderID: data.orderID,
+                                    payerID: data.payerID,
+                                    details: details
+                                });
+                            });
+                        },
+                        onError: function(err) {
+                            console.error('PayPal error:', err);
+                            alert('PayPal payment failed. Please try again.');
+                        }
+                    }).render('#paypal-button-container');
+                }
+            }
+
+            // Assessment form methods
+            updateFormProgress() {
+                const requiredFields = document.querySelectorAll('#assessment-form [required]');
+                const completedFields = Array.from(requiredFields).filter(field => {
+                    if (field.type === 'radio') {
+                        return document.querySelector(`input[name="${field.name}"]:checked`);
+                    }
+                    return field.value.trim() !== '';
+                });
+
+                const progress = (completedFields.length / requiredFields.length) * 100;
+                
+                const progressBar = document.querySelector('.progress-fill');
+                const progressPercentage = document.querySelector('.progress-percentage');
+                
+                if (progressBar && progressPercentage) {
+                    progressBar.style.width = progress + '%';
+                    progressPercentage.textContent = Math.round(progress) + '%';
+                }
+
+                // Show continue to payment button when form is complete
+                const continueBtn = document.getElementById('continue-to-payment');
+                const submitBtn = document.getElementById('submit-assessment');
+                
+                if (progress === 100) {
+                    if (this.paymentCompleted) {
+                        continueBtn.style.display = 'none';
+                        submitBtn.style.display = 'block';
+                    } else {
+                        continueBtn.style.display = 'block';
+                        submitBtn.style.display = 'none';
+                    }
+                } else {
+                    continueBtn.style.display = 'none';
+                    submitBtn.style.display = 'none';
+                }
+            }
+
+            validateField(e) {
+                const field = e.target;
+                const formGroup = field.closest('.form-group');
+                
+                if (field.hasAttribute('required') && !field.value.trim()) {
+                    this.showFieldError(formGroup, 'This field is required');
+                } else if (field.type === 'email' && field.value && !this.isValidEmail(field.value)) {
+                    this.showFieldError(formGroup, 'Please enter a valid email address');
+                } else {
+                    this.showFieldSuccess(formGroup);
+                }
+            }
+
+            clearValidation(e) {
+                const field = e.target;
+                const formGroup = field.closest('.form-group');
+                const feedback = formGroup.querySelector('.input-feedback');
+                
+                if (feedback) {
+                    feedback.remove();
+                }
+                formGroup.classList.remove('field-error', 'field-success');
+            }
+
+            showFieldError(formGroup, message) {
+                this.clearValidation({ target: formGroup.querySelector('input, select, textarea') });
+                formGroup.classList.add('field-error');
+                
+                const feedback = document.createElement('div');
+                feedback.className = 'input-feedback error';
+                feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                formGroup.appendChild(feedback);
+            }
+
+            showFieldSuccess(formGroup) {
+                this.clearValidation({ target: formGroup.querySelector('input, select, textarea') });
+                formGroup.classList.add('field-success');
+                
+                const feedback = document.createElement('div');
+                feedback.className = 'input-feedback success';
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> Valid';
+                formGroup.appendChild(feedback);
+            }
+
+            isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            checkDeveloperMode() {
+                const firstName = document.getElementById('first-name').value;
+                const lastName = document.getElementById('last-name').value;
+                
+                if (firstName === 'Seyyid' && lastName === 'Mustafa') {
+                    document.getElementById('developer-mode').value = 'true';
+                    this.generateTestData();
+                    console.log('DEVELOPER MODE ACTIVATED');
+                } else {
+                    document.getElementById('developer-mode').value = 'false';
+                }
+            }
+
+            generateTestData() {
+                const testData = {
+                    assessmentType: ['California K-12 School', 'US Immigration I-693'],
+                    genders: ['Male', 'Female', 'Other'],
+                    countries: ['United States', 'Mexico', 'Canada', 'Other'],
+                    vaccineTypes: ['Start-Up', 'Catch-Up'],
+                    recordStatuses: ['Complete', 'Partial', 'None'],
+                    yesNo: ['Yes', 'No']
+                };
+
+                // Generate random data
+                const randomDate = new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000);
+                const randomEmail = `test${Math.floor(Math.random() * 1000)}@example.com`;
+
+                // Fill form with test data
+                document.getElementById('assessment-type').value = this.getRandomItem(testData.assessmentType);
+                document.getElementById('date-of-birth').value = randomDate.toISOString().split('T')[0];
+                document.getElementById('gender').value = this.getRandomItem(testData.genders);
+                document.getElementById('grade-entering').value = `${Math.floor(Math.random() * 12) + 1}th`;
+                document.getElementById('school-name').value = 'Test Elementary School';
+                document.getElementById('country-of-birth').value = this.getRandomItem(testData.countries);
+                document.getElementById('startup-catchup').value = this.getRandomItem(testData.vaccineTypes);
+                document.getElementById('previous-records').value = this.getRandomItem(testData.recordStatuses);
+                document.getElementById('cair-mrn').value = `TEST${Math.floor(Math.random() * 100000)}`;
+                document.getElementById('allergies-reactions').value = this.getRandomItem(testData.yesNo);
+                document.getElementById('physician-record').value = 'Dr. Test, 123 Test Street, Test City, TC 12345';
+                document.getElementById('email').value = randomEmail;
+
+                // Handle conditional fields
+                const hospitalBirth = this.getRandomItem(testData.yesNo);
+                document.querySelector(`input[name="hospital_birth"][value="${hospitalBirth}"]`).checked = true;
+
+                // Trigger change events
+                document.getElementById('allergies-reactions').dispatchEvent(new Event('change'));
+                document.getElementById('startup-catchup').dispatchEvent(new Event('change'));
+                document.querySelector(`input[name="hospital_birth"][value="${hospitalBirth}"]`).dispatchEvent(new Event('change'));
+
+                this.updateFormProgress();
+            }
+
+            getRandomItem(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+
+            async handleFormSubmit(e) {
+                e.preventDefault();
+                
+                if (!this.paymentCompleted) {
+                    alert('Please complete payment first.');
+                    this.goToStep(3);
+                    return;
+                }
+
+                // Show loading state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+
+                try {
+                    // Collect form data
+                    const formData = new FormData(e.target);
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    // Submit to backend API
+                    const response = await fetch('/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    // Show success with reference code
+                    document.getElementById('reference-code-display').textContent = result.referenceCode;
+                    this.goToStep(4);
+                    
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    alert('Failed to submit form. Please try again.');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+
+            goToStep(stepNumber) {
+                this.currentStep = stepNumber;
+                
+                // Update progress steps
+                document.querySelectorAll('.step').forEach(step => {
+                    step.classList.remove('active', 'completed');
+                });
+                document.querySelectorAll('.content-section').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Mark previous steps as completed
+                for(let i = 1; i < stepNumber; i++) {
+                    document.querySelector(`[data-step="${i}"]`)?.classList.add('completed');
+                }
+
+                // Activate current step
+                document.querySelector(`[data-step="${stepNumber}"]`)?.classList.add('active');
+                document.getElementById(`step-${stepNumber}`)?.classList.add('active');
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Initialize payment system on step 3
+                if(stepNumber === 3) {
+                    this.switchPaymentMethod('card');
+                }
+            }
+        }
+
+        // Global function for backward compatibility
+        function goToStep(stepNumber) {
+            window.irproSystem.goToStep(stepNumber);
+        }
+
+        // Initialize system when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.irproSystem = new IRProCompleteSystem();
+        });
+    </script>
 </body>
 </html>

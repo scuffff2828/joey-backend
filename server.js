@@ -403,14 +403,9 @@ app.get('/assessment', verifyPayment, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Complete unified system route
-app.get('/complete', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'complete-system.html'));
-});
-
-// Redirect root to complete system
+// Main application route
 app.get('/', (req, res) => {
-  res.redirect('/complete');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/health', (req, res) => {
