@@ -1,7 +1,7 @@
 {
-  "name": "joey-backend",
+  "name": "irpro-payment-system",
   "version": "1.0.0",
-  "description": "Backend API for J-O-E-Y with JSON processing and PDF generation",
+  "description": "IRPro - Professional Immunization Assessment Payment System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,7 +19,7 @@
   "devDependencies": {
     "nodemon": "^3.0.2"
   },
-  "keywords": ["api", "json", "pdf", "express"],
-  "author": "Created for J-O-E-Y",
+  "keywords": ["payment", "medical", "assessment", "immunization", "pdf", "express"],
+  "author": "IRPro Development Team",
   "license": "MIT"
 }

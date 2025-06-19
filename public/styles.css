@@ -699,6 +699,34 @@ body {
 .stage-header p {
     color: #6c757d;
     font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.assessment-info {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #28a745;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.info-item i {
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .assessment-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 .intake-form {
@@ -828,7 +856,7 @@ body {
 }
 
 .payment-benefits li::before {
-    content: "✓";
+    content: "*";
     position: absolute;
     left: 0;
     color: var(--color-success);
@@ -996,7 +1024,7 @@ body {
 }
 
 .progress-label::before {
-    content: "📊";
+    content: "*";
     font-size: 1.2em;
 }
 
@@ -1087,7 +1115,7 @@ body {
 }
 
 .form-progress.completed .progress-label::before {
-    content: "✅";
+    content: "*";
 }
 
 .form-progress.completed .progress-percentage {

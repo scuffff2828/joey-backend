@@ -1,74 +1,116 @@
-# J-O-E-Y Backend API
+# IRPro Payment System
 
-Backend service for processing JSON data and generating PDFs.
+Professional Immunization Assessment Payment System with integrated 3-step workflow.
 
 ## Features
 
-- `/submit` API endpoint for JSON data processing
-- Automatic PDF generation from JSON data
-- File storage with public URLs
-- CORS enabled for frontend integration
-- Health check endpoint
+### 3-Step Process
+1. **Service Selection** - Choose assessment type and review features
+2. **Secure Payment** - PayPal integration for $50 one-time payment
+3. **Assessment Form** - Complete 14-field medical assessment
 
-## Quick Start
+### Core Functionality
+- Complete immunization assessment form with 14 required fields
+- PayPal payment integration with secure token-based access
+- Professional PDF report generation
+- Email notifications with attachments
+- SQLite database for payment tracking
+- 24-hour access after payment
+- Reference code system for tracking submissions
 
-1. Install dependencies:
+### Technical Stack
+- **Backend**: Node.js with Express
+- **Database**: SQLite3
+- **PDF Generation**: PDFKit
+- **Payment**: PayPal Checkout SDK
+- **Email**: Nodemailer
+- **Frontend**: Vanilla JavaScript with modern CSS
+
+## Installation
+
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd irpro-payment-system
+
+# Install dependencies
 npm install
-```
 
-2. Start the server:
-```bash
+# Start the server
 npm start
 ```
 
-For development with auto-reload:
+## Configuration
+
+Set the following environment variables:
 ```bash
-npm run dev
+PORT=3000
+EMAIL_USER=your-gmail@gmail.com
+EMAIL_PASS=your-app-password
 ```
 
 ## API Endpoints
 
-### POST /submit
-Accepts JSON data, saves it as a file, and generates a PDF.
+- `GET /` - Redirects to payment page
+- `GET /payment.html` - Payment flow (3 steps)
+- `GET /assessment` - Protected assessment form (requires payment token)
+- `POST /payment-success` - PayPal payment verification
+- `POST /submit` - Form submission and PDF generation
+- `GET /health` - Health check endpoint
 
-**Request:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "data": {...}
-}
+## Payment Flow
+
+1. User selects service on payment page
+2. Secure PayPal payment for $50
+3. System generates access token valid for 24 hours
+4. User redirected to assessment form
+5. Form submission generates PDF and sends email notification
+
+## Database Schema
+
+```sql
+CREATE TABLE payments (
+    id TEXT PRIMARY KEY,
+    payment_id TEXT NOT NULL,
+    amount REAL NOT NULL,
+    status TEXT NOT NULL,
+    access_token TEXT UNIQUE NOT NULL,
+    expires_at TEXT NOT NULL,
+    email TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
 ```
-
-**Response:**
-```json
-{
-  "id": "uuid",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "files": {
-    "json": {
-      "filename": "data_2024-01-01T00-00-00-000Z_uuid.json",
-      "url": "http://localhost:3000/files/data_2024-01-01T00-00-00-000Z_uuid.json"
-    },
-    "pdf": {
-      "filename": "data_2024-01-01T00-00-00-000Z_uuid.pdf",
-      "url": "http://localhost:3000/files/data_2024-01-01T00-00-00-000Z_uuid.pdf"
-    }
-  },
-  "message": "Data processed successfully"
-}
-```
-
-### GET /health
-Health check endpoint.
-
-## Deployment
-
-The application is ready for deployment. Set the `PORT` environment variable as needed.
 
 ## File Structure
 
-- `server.js` - Main application file
-- `files/` - Storage directory for generated files
-- Generated files are accessible via `/files/` route
+```
+├── server.js              # Main server file
+├── database.js            # Database configuration
+├── package.json           # Dependencies
+├── docker-compose.yml     # Docker setup
+├── public/
+│   ├── index.html         # Assessment form
+│   ├── payment.html       # Payment page (3 steps)
+│   ├── script.js          # Frontend JavaScript
+│   └── styles.css         # Styles
+└── files/                 # Generated PDFs and JSON files
+```
+
+## Development
+
+```bash
+# Run in development mode with auto-reload
+npm run dev
+```
+
+## Security Features
+
+- Payment verification through PayPal API
+- Token-based authentication for assessment access
+- Input validation and sanitization
+- CORS protection
+- Secure file handling
+
+## License
+
+MIT License

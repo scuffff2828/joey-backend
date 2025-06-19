@@ -191,7 +191,7 @@ class IRProForm {
     showCompletionCelebration(progressBar) {
         // Add sparkle effect
         const sparkles = document.createElement('div');
-        sparkles.innerHTML = '✨🎉✨';
+        sparkles.innerHTML = '***';
         sparkles.style.cssText = `
             position: absolute;
             top: -10px;
@@ -239,9 +239,9 @@ class IRProForm {
 
     showDeveloperMode() {
         const header = document.querySelector('.stage-header h1');
-        header.innerHTML = '🚀 Developer Mode - Test Data Generated';
+        header.innerHTML = 'Developer Mode - Test Data Generated';
         header.style.color = '#dc3545';
-        console.log('🚀 DEVELOPER MODE ACTIVATED');
+        console.log('DEVELOPER MODE ACTIVATED');
     }
 
     hideDeveloperMode() {
@@ -323,7 +323,7 @@ class IRProForm {
             const data = Object.fromEntries(formData.entries());
             
             // Submit to backend API
-            const response = await fetch('https://pre-vaccination.onrender.com/submit', {
+            const response = await fetch('/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
