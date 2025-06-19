@@ -403,9 +403,14 @@ app.get('/assessment', verifyPayment, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Redirect root to payment page
+// Complete unified system route
+app.get('/complete', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'complete-system.html'));
+});
+
+// Redirect root to complete system
 app.get('/', (req, res) => {
-  res.redirect('/payment.html');
+  res.redirect('/complete');
 });
 
 app.get('/health', (req, res) => {
