@@ -195,6 +195,180 @@
     animation: slideIn 0.3s ease;
 }
 
+/* Payment Page Styles */
+.payment-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.payment-header h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.payment-header p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.payment-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.service-details h2 {
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.features-list {
+    margin-bottom: 30px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 0;
+}
+
+.feature i {
+    color: var(--color-success);
+    margin-right: 15px;
+    font-size: 1.1rem;
+}
+
+.feature span {
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+.pricing-section {
+    text-align: center;
+    margin: 40px 0;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.price-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.currency {
+    font-size: 2rem;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.amount {
+    font-size: 4rem;
+    color: var(--color-primary);
+    font-weight: 700;
+    margin: 0 5px;
+}
+
+.period {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.price-description {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.payment-section {
+    margin-top: 30px;
+}
+
+#paypal-button-container {
+    margin-bottom: 20px;
+}
+
+.payment-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.payment-security i {
+    margin-right: 8px;
+    color: var(--color-success);
+}
+
+.trust-indicators {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 120px;
+}
+
+.trust-item i {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.trust-item span {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .payment-container {
+        padding: 20px 10px;
+    }
+    
+    .payment-card {
+        padding: 20px;
+    }
+    
+    .payment-header h1 {
+        font-size: 2rem;
+    }
+    
+    .amount {
+        font-size: 3rem;
+    }
+    
+    .trust-indicators {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
 :root {
     --color-primary: #000000;
     --color-secondary: #ffffff;

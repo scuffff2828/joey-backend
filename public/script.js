@@ -365,10 +365,10 @@ class IRProForm {
             
             referenceInfo.innerHTML = `
                 <div class="reference-code-display">
-                    <h3>🎫 Your Reference Code</h3>
+                    <h3>Your Reference Code</h3>
                     <div class="reference-code">${this.submissionResult.referenceCode}</div>
                     <div class="reference-instructions">
-                        <p><strong>⚠️ IMPORTANT: Please save this code!</strong></p>
+                        <p><strong>IMPORTANT: Please save this code!</strong></p>
                         <p>You will need this reference code for all future inquiries about your submission.</p>
                         <p>Screenshot or write down: <strong>${this.submissionResult.referenceCode}</strong></p>
                     </div>

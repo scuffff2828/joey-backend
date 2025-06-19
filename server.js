@@ -5,6 +5,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
+const db = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,36 @@ const generateReferenceCode = () => {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
+};
+
+const generateAccessToken = () => {
+  return uuidv4().replace(/-/g, '');
+};
+
+const verifyPayment = (req, res, next) => {
+  const { token } = req.query;
+  
+  if (!token) {
+    return res.redirect('/payment.html');
+  }
+  
+  db.get(
+    'SELECT * FROM payments WHERE access_token = ? AND status = "completed" AND expires_at > datetime("now")',
+    [token],
+    (err, payment) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).send('Internal server error');
+      }
+      
+      if (!payment) {
+        return res.redirect('/payment.html');
+      }
+      
+      req.payment = payment;
+      next();
+    }
+  );
 };
 
 const sendNotificationEmail = async (referenceCode, submissionData, jsonPath, pdfPath) => {
@@ -75,36 +106,36 @@ const sendNotificationEmail = async (referenceCode, submissionData, jsonPath, pd
       to: 'seyyidsahin2828@gmail.com',
       subject: referenceCode,
       html: `
-        <h2>📋 New IRPro Submission</h2>
+        <h2>New IRPro Submission</h2>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
-          <p><strong>🎫 Reference Code:</strong> <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace;">${referenceCode}</span></p>
-          <p><strong>⏰ Submission Time:</strong> ${new Date().toLocaleString()}</p>
-          <p><strong>👤 Patient Name:</strong> ${submissionData.first_name} ${submissionData.last_name}</p>
-          <p><strong>📧 Email:</strong> ${submissionData.email}</p>
-          <p><strong>📝 Assessment Type:</strong> ${submissionData.assessment_type}</p>
-          <p><strong>🏥 Grade/School:</strong> ${submissionData.grade_entering || 'Not specified'} / ${submissionData.school_name || 'Not specified'}</p>
-          <p><strong>🌍 Country of Birth:</strong> ${submissionData.country_of_birth}</p>
-          <p><strong>💉 Vaccination Status:</strong> ${submissionData.startup_catchup}</p>
-          <p><strong>🩺 Previous Records:</strong> ${submissionData.previous_records}</p>
-          <p><strong>⚠️ Allergies:</strong> ${submissionData.allergies_reactions}</p>
+          <p><strong>Reference Code:</strong> <span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-family: monospace;">${referenceCode}</span></p>
+          <p><strong>Submission Time:</strong> ${new Date().toLocaleString()}</p>
+          <p><strong>Patient Name:</strong> ${submissionData.first_name} ${submissionData.last_name}</p>
+          <p><strong>Email:</strong> ${submissionData.email}</p>
+          <p><strong>Assessment Type:</strong> ${submissionData.assessment_type}</p>
+          <p><strong>Grade/School:</strong> ${submissionData.grade_entering || 'Not specified'} / ${submissionData.school_name || 'Not specified'}</p>
+          <p><strong>Country of Birth:</strong> ${submissionData.country_of_birth}</p>
+          <p><strong>Vaccination Status:</strong> ${submissionData.startup_catchup}</p>
+          <p><strong>Previous Records:</strong> ${submissionData.previous_records}</p>
+          <p><strong>Allergies:</strong> ${submissionData.allergies_reactions}</p>
         </div>
         <hr style="margin: 20px 0;">
-        <p><strong>📎 Attached Files:</strong></p>
+        <p><strong>Attached Files:</strong></p>
         <ul>
-          <li>📄 JSON Data File (${referenceCode}_submission.json)</li>
-          <li>📑 PDF Report (${referenceCode}_report.pdf)</li>
+          <li>JSON Data File (${referenceCode}_submission.json)</li>
+          <li>PDF Report (${referenceCode}_report.pdf)</li>
         </ul>
         <hr style="margin: 20px 0;">
-        <p style="color: #666; font-size: 12px;"><em>🤖 This is an automated notification from IRPro system.</em></p>
+        <p style="color: #666; font-size: 12px;"><em>This is an automated notification from IRPro system.</em></p>
       `,
       attachments: attachments
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent successfully to seyyidsahin2828@gmail.com with ${attachments.length} attachments`);
-    console.log(`📎 Attachments: ${attachments.map(a => a.filename).join(', ')}`);
+    console.log(`Email sent successfully to seyyidsahin2828@gmail.com with ${attachments.length} attachments`);
+    console.log(`Attachments: ${attachments.map(a => a.filename).join(', ')}`);
   } catch (error) {
-    console.error('❌ Failed to send notification email:', error);
+    console.error('Failed to send notification email:', error);
   }
 };
 
@@ -224,7 +255,7 @@ const generatePDF = async (data, filename) => {
     
     // Developer mode indicator
     if (data.developer_mode === 'true') {
-      doc.fontSize(8).font('Helvetica-Bold').fillColor('red').text('⚠️ DEVELOPER MODE - TEST DATA', 400, yPosition);
+      doc.fontSize(8).font('Helvetica-Bold').fillColor('red').text('DEVELOPER MODE - TEST DATA', 400, yPosition);
     }
     
     doc.end();
@@ -279,6 +310,51 @@ app.post('/submit', async (req, res) => {
     console.error('Error processing data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Payment success handler
+app.post('/payment-success', async (req, res) => {
+  try {
+    const { orderID, payerID, details } = req.body;
+    
+    // Verify payment amount is $50
+    if (!details.purchase_units || details.purchase_units[0].amount.value !== '50.00') {
+      return res.json({ success: false, error: 'Invalid payment amount' });
+    }
+    
+    // Generate access token
+    const access_token = generateAccessToken();
+    const expires_at = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+    // Store payment in database
+    db.run(
+      'INSERT INTO payments (id, payment_id, amount, status, access_token, expires_at, email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [uuidv4(), orderID, 50.00, 'completed', access_token, expires_at.toISOString(), details.payer.email_address],
+      function(err) {
+        if (err) {
+          console.error('Database error:', err);
+          return res.json({ success: false, error: 'Database error' });
+        }
+        
+        console.log('Payment recorded:', orderID, 'Access token:', access_token);
+        res.json({ success: true, access_token });
+      }
+    );
+    
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    res.json({ success: false, error: 'Payment processing failed' });
+  }
+});
+
+// Protected assessment route
+app.get('/assessment', verifyPayment, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Redirect root to payment page
+app.get('/', (req, res) => {
+  res.redirect('/payment.html');
 });
 
 app.get('/health', (req, res) => {
